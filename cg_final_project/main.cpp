@@ -19,9 +19,6 @@
 
 
 
-
-
-
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 {
 	srand(static_cast<unsigned int>(time(NULL))); // 시드 초기화
