@@ -15,7 +15,8 @@
 #include "Monster.h"
 
 // 탱크가 attack 시에 생성자 호출
-Bullet::Bullet(Model* model, Monster* target) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
+Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc)
+	: VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->modelMat = glm::mat4(1.0);
@@ -23,6 +24,9 @@ Bullet::Bullet(Model* model, Monster* target) : VAO(0), VBO_pos(0), VBO_nol(0), 
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->velocity = 2.0f;
+	this->center = glm::vec3(0, 0, 0);
+	this->viewPoint = glm::vec3(0, 0, 0);
+	this->target = target;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -36,6 +40,19 @@ Bullet::Bullet(Model* model, Monster* target) : VAO(0), VBO_pos(0), VBO_nol(0), 
 	SetViewPoint();
 	SetCenter();
 	SetModelMat();
+
+	glUseProgram(shaderProgramID);
+
+	this->uLightPosLoc = glGetUniformLocation(shaderProgramID, "lightPos");
+	this->uLightColorLoc = glGetUniformLocation(shaderProgramID, "lightColor");
+
+
+	this->uModelLoc = glGetUniformLocation(shaderProgramID, "model");
+	this->uViewLoc = glGetUniformLocation(shaderProgramID, "view");
+	this->uProjLoc = glGetUniformLocation(shaderProgramID, "projection");
+
+	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
+	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 }
 
 Bullet::~Bullet() {
@@ -55,7 +72,8 @@ void Bullet::SetViewPoint() {
 void Bullet::SetModelMat() {
 	// 다음 움직임을 적용하는 행렬 결정
 	glm::vec3 deltaMove = this->velocity * this->viewPoint;
-	this->modelMat = glm::translate(glm::mat4(1.0), deltaMove);
+	this->transMat = glm::translate(glm::mat4(1.0), deltaMove);
+	this->modelMat = this->transMat * this->modelMat;
 }
 
 void Bullet::SetCenter() {

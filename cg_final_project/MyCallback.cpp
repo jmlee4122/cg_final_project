@@ -18,6 +18,8 @@
 #include "CameraMain.h"
 #include "CameraSub.h"
 #include "Plane.h"
+#include "Bullet.h"
+#include "Monster.h"
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
@@ -95,6 +97,16 @@ GLvoid DrawScene() {
 	// draw tank
 	if (myTank) {
 		myTank->DrawAllPart("main");
+	}
+	if (!myBullets.empty()) {
+		for (auto r : myBullets) {
+			r->Draw("main");
+		}
+	}
+	if (!myMonsters.empty()) {
+		for (auto r : myMonsters) {
+			r->Draw("main");
+		}
 	}
 
 	// 2. 스카이박스 렌더링
@@ -188,6 +200,16 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 
 GLvoid Timer(int value) {
 	if (myTank) myTank->Update();
+	if (!myBullets.empty()) {
+		for (auto r : myBullets) {
+			r->Update();
+		}
+	}
+	if (!myMonsters.empty()) {
+		for (auto r : myMonsters) {
+			r->Update();
+		}
+	}
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 	glutPostRedisplay();

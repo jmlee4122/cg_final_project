@@ -7,6 +7,8 @@ struct Model;
 struct Vertex;
 struct Face;
 
+class Monster;
+
 void read_newline(char* str);
 void read_obj_file(const char* filename, Model* model);
 void print_model_info(const Model* model);
@@ -23,7 +25,7 @@ void SetProjMatSub(); // set projection matrix for mini map
 
 void CreatePlane();
 void CreateTank();
-
+void CreateMonster(glm::vec3 initLoc);
 
 
 

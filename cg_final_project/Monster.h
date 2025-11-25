@@ -10,7 +10,7 @@ class Tank;
 class Monster
 {
 public:
-    Monster(Model* model, Tank* target); // 생성될 때 탱크 포인터를 받는다.
+    Monster(Model* model, Tank* target, glm::vec3 initLoc); // 생성될 때 탱크 포인터를 받는다.
     ~Monster();
     void SetColor();
     void SetViewPoint();
@@ -28,6 +28,7 @@ private:
     GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc;
     glm::vec3 uColor;
     glm::mat4 modelMat;
+    glm::mat4 transMat;
     Tank* target;
     glm::vec3 viewPoint;
     glm::vec3 center;

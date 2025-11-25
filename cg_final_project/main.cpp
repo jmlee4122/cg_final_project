@@ -35,6 +35,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	Init();
 	//CreatePlane();
 	CreateTank();
+	CreateMonster(glm::vec3(0,1,0));
 
 	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수

@@ -13,6 +13,8 @@
 #include "MyUtils.h"
 #include "MyExtern.h"
 #include "MyStruct.h"
+#include "Monster.h"
+#include "Bullet.h"
 
 Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelModel) {
     // create tank part
@@ -39,12 +41,14 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     // init speed and acceleration (translation)
     this->maxSpeed = 0.5f;
     this->acceleration = 0.01f; // per frame
-    this->deceleration = 0.01f; // per frame
+    this->deceleration = 0.02f; // per frame
     this->currentSpeed = 0.0f;
 
     // init speed and radians (rotation)
-    this->rRadians = 0.3f;
+    this->rRadians = 0.15f;
     this->rVelocity = this->currentSpeed / this->rRadians;
+
+    this->barrelLen = 1.3f;
 
     // setting camera (myExtern)
     myMainCamera = new CameraMain(this->center, this->frontVec);
@@ -157,4 +161,43 @@ void Tank::DrawAllPart(std::string str) {
 
 glm::vec3 Tank::GetCenter() {
     return this->center;
+}
+
+void Tank::attack() {
+    // NearestMonster() : 현재 위치에서 가장 가까운 몬스터 찾기
+    Monster* target = NearestMonster();
+    if (target == nullptr) return;
+    // GetBulletInitLoc() : 현재 위치에서 포탄이 생성될 위치 (포구 바로 앞)
+    glm::vec3 location = GetBulletInitLoc();
+    Model* bulletModel = new Model;
+    read_obj_file("bullet.obj", bulletModel);
+    Bullet* newBullet = new Bullet(bulletModel, target, location);
+    myBullets.push_back(newBullet);
+}
+
+Monster* Tank::NearestMonster() {
+    Monster* nearest = nullptr;
+    float minDis = (float)1e9;
+    for (int i = 0; i < myMonsters.size(); i++) {
+        // tc: tank center, mc: monster center
+        glm::vec3 tc = this->center;
+        glm::vec3 mc = myMonsters[i]->GetCenter();
+        // 크기만 비교하므로 루트를 씌우지 x
+        float currDis =
+            (tc.x - mc.x) * (tc.x - mc.x) +
+            (tc.y - mc.y) * (tc.y - mc.y) +
+            (tc.z - mc.z) * (tc.z - mc.z);
+        if (currDis < minDis) {
+            minDis = currDis;
+            nearest = myMonsters[i];
+        }
+    }
+    // 가장 가까운 몬스터 반환, 몬스터가 없다면 null 반환
+    return nearest;
+}
+
+glm::vec3 Tank::GetBulletInitLoc() {
+    glm::vec3 loc = glm::vec3(0, 0, 0);
+    loc = this->center + (this->barrelLen * this->viewPoint);
+    return loc;
 }

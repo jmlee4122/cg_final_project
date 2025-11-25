@@ -8,6 +8,7 @@
 
 class TankPart;
 struct Model;
+class Monster;
 
 class Tank
 {
@@ -30,6 +31,10 @@ public:
 	void DrawAllPart(std::string str);
 	// pass center to Monsters
 	glm::vec3 GetCenter();
+
+	void attack();
+	Monster* NearestMonster();
+	glm::vec3 GetBulletInitLoc();
 
 private:
 	bool isFront, isBack;
@@ -55,5 +60,8 @@ private:
 
 	float rVelocity; // rotation velocity
 	float rRadians; // rotation radians
+
+	float barrelLen;
+	glm::vec3 viewPoint;
 };
 

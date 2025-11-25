@@ -6,10 +6,14 @@
 #include <gl/freeglut.h>
 #include <gl/glm/glm.hpp>
 
+
+class Bullet;
+class Monster;
 class Plane;
 class Tank;
 class CameraMain;
 class CameraSub;
+
 
 extern GLuint vertexShader;
 extern GLuint fragmentShader;
@@ -28,6 +32,8 @@ extern float gTankSize_depth;
 
 extern Plane* myPlane;
 extern Tank* myTank;
+extern std::vector<Monster*> myMonsters;
+extern std::vector<Bullet*> myBullets;
 extern CameraMain* myMainCamera;
 extern CameraSub* mySubCamera;
 

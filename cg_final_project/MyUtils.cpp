@@ -20,6 +20,7 @@
 #include "CameraSub.h"
 #include "Tank.h"
 #include "Plane.h"
+#include "Monster.h"
 
 void read_newline(char* str) {
 	char* pos;
@@ -320,9 +321,16 @@ void CreateTank() {
 	// create tank
 	myTank = new Tank(bottomModel, midModel, topModel, barrelModel);
 }
-
-
-
+void CreateMonster(glm::vec3 initLoc) {
+	if (myTank == nullptr) {
+		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
+		return;
+	}
+	std::cout << "myTank is valid" << std::endl;
+	Model* monsterModel = new Model;
+	read_obj_file("monster.obj", monsterModel);
+	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc));
+}
 
 
 
