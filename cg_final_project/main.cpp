@@ -10,6 +10,8 @@
 #include "MyUtils.h"
 #include "MyStruct.h"
 #include "MyCallback.h"
+#include "Monster.h"
+#include "Bullet.h"
 
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 {

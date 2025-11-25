@@ -154,3 +154,7 @@ void Tank::DrawAllPart(std::string str) {
     // from bottom to barrel (recursion)
     this->bottom->DrawPart(str);
 }
+
+glm::vec3 Tank::GetCenter() {
+    return this->center;
+}

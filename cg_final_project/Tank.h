@@ -28,6 +28,8 @@ public:
 	void SetRemaining();
 	// draw
 	void DrawAllPart(std::string str);
+	// pass center to Monsters
+	glm::vec3 GetCenter();
 
 private:
 	bool isFront, isBack;
