@@ -217,7 +217,11 @@ GLvoid Timer(int value) {
 }
 
 GLvoid Mouse(int button, int state, int x, int y) {
-
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN) {
+			myTank->attack();
+		}
+	}
 }
 GLvoid MouseMotion(int x, int y) {
 

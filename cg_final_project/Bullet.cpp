@@ -19,14 +19,15 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc)
 	: VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
-	this->modelMat = glm::mat4(1.0);
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
-	this->velocity = 2.0f;
-	this->center = glm::vec3(0, 0, 0);
+	this->velocity = 1.0f;
+	this->center = loc;
 	this->viewPoint = glm::vec3(0, 0, 0);
 	this->target = target;
+	this->modelMat = glm::translate(glm::mat4(1.0), this->center);
+	this->transMat = glm::mat4(1.0);
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -78,7 +79,9 @@ void Bullet::SetModelMat() {
 
 void Bullet::SetCenter() {
 	// 다음 움직임을 적용하는 행렬을 현재 위치에 적용 -> center 업데이트
-	this->center = glm::vec3(this->modelMat * glm::vec4(this->center, 1));
+	glm::vec4 vector = glm::vec4(this->center, 1);
+	vector = this->transMat * vector;
+	this->center = glm::vec3(vector);
 }
 
 void Bullet::Update() {

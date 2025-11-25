@@ -117,6 +117,6 @@ void Monster::Draw(std::string camera) {
 	glDrawElements(GL_TRIANGLES, fCount * 3, GL_UNSIGNED_INT, (void*)(0));
 	glBindVertexArray(0);
 
-	std::cout << "Monster x : " << this->center.x << "//";
-	std::cout << "Monster x : " << this->center.z << "//" << std::endl;
+	//std::cout << "Monster x : " << this->center.x << "//";
+	//std::cout << "Monster x : " << this->center.z << "//" << std::endl;
 }
