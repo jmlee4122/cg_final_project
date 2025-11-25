@@ -31,7 +31,7 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->isJumping = false;
 
     this->center = glm::vec3(0, 0, 0);
-    this->viewPoint = glm::vec3(0, 0, 1);
+    this->frontVec = glm::vec3(0, 0, 1);
     this->transMat = glm::mat4(1.0);
     this->rotateMat = glm::mat4(1.0);
     this->modelMat = glm::mat4(1.0);
@@ -44,11 +44,11 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
 
     // init speed and radians (rotation)
     this->rRadians = 0.3f;
-    this->rVelocity = this->maxSpeed / this->rRadians;
+    this->rVelocity = this->currentSpeed / this->rRadians;
 
     // setting camera (myExtern)
-    myMainCamera = new CameraMain(this->center, this->viewPoint);
-    mySubCamera = new CameraSub(this->center, this->viewPoint);
+    myMainCamera = new CameraMain(this->center, this->frontVec);
+    mySubCamera = new CameraSub(this->center, this->frontVec);
 }
 Tank::~Tank() {
     // later
@@ -72,9 +72,9 @@ void Tank::Update() {
 
     // update camera
     SetRemaining();
-    //UpdateCameraVectors(this->modelMat, this->center, this->viewPoint); // in MyUtils.h
+    //UpdateCameraVectors(this->modelMat, this->center, this->frontVec); // in MyUtils.h
     myMainCamera->SetModelMat(this->modelMat);
-    mySubCamera->SetCenterViewPoint(this->center, this->viewPoint);
+    mySubCamera->SetCenterViewPoint(this->center, this->frontVec);
 }
 void Tank::SetTransMat() {
     float targetSpeed = 0.0f;
@@ -114,7 +114,7 @@ void Tank::SetTransMat() {
         this->transMat = glm::mat4(1.0);
     }
     else {
-        glm::vec3 frontVector = glm::normalize(this->viewPoint);
+        glm::vec3 frontVector = glm::normalize(this->frontVec);
         glm::vec3 move = this->currentSpeed * frontVector;
         this->transMat = glm::translate(glm::mat4(1.0), move);
     }
@@ -126,17 +126,14 @@ void Tank::SetRotateMat() {
     }
     // rotating
     else {
-        float w = 0.0f;
-        if ((this->isLeft && this->currentSpeed > 0.0f) ||
-            (this->isRight && this->currentSpeed < 0.0f)) {
-            w = this->rVelocity; // ccw
+        if (this->isLeft) {
+            this->rVelocity = this->currentSpeed / this->rRadians;
         }
-        if (this->isRight && this->currentSpeed > 0.0f ||
-            (this->isLeft && this->currentSpeed < 0.0f)) {
-            w = -1.0f * this->rVelocity; // cw
+        if (this->isRight) {
+            this->rVelocity = -1.0f * this->currentSpeed / this->rRadians;
         }
         glm::mat4 t1 = glm::translate(glm::mat4(1.0), -1.0f * this->center);
-        glm::mat4 r = glm::rotate(glm::mat4(1.0), (float)glm::radians(w), glm::vec3(0, 1, 0));
+        glm::mat4 r = glm::rotate(glm::mat4(1.0), (float)glm::radians(this->rVelocity), glm::vec3(0, 1, 0));
         glm::mat4 t2 = glm::translate(glm::mat4(1.0), this->center);
         this->rotateMat = t2 * r * t1;
     }
@@ -147,10 +144,10 @@ void Tank::SetRemaining() {
     vector = this->transMat * vector;
     this->center = glm::vec3(vector); // order : 4 -> 3
 
-    // updating viewPoint
-    vector = glm::vec4(this->viewPoint, 0); // order : 3 -> 4
+    // updating frontVec
+    vector = glm::vec4(this->frontVec, 0); // order : 3 -> 4
     vector = this->rotateMat * vector;
-    this->viewPoint = glm::normalize(glm::vec3(vector)); // order : 4 -> 3
+    this->frontVec = glm::normalize(glm::vec3(vector)); // order : 4 -> 3
 }
 
 void Tank::DrawAllPart(std::string str) {

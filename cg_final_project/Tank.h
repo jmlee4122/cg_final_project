@@ -40,7 +40,7 @@ private:
 	TankPart* barrel;
 
 	glm::vec3 center; // for updating camera vec
-	glm::vec3 viewPoint; // for updating camera vec
+	glm::vec3 frontVec; // for updating camera vec
 
 	glm::mat4 transMat; // press 'w' or 's' (Apply to bottom, mid, top, barrel)
 	glm::mat4 rotateMat; // press 'a' or 'd' (Apply to bottom, mid, top, barrel)
