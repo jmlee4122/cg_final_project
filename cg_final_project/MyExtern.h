@@ -14,8 +14,7 @@ class CameraSub;
 extern GLuint vertexShader;
 extern GLuint fragmentShader;
 extern GLuint shaderProgramID;
-extern int window_w;
-extern int window_h;
+
 extern int minimap_size;
 
 extern glm::mat4 gViewMat;
@@ -37,8 +36,8 @@ extern CameraSub* mySubCamera;
 struct RenderChunk;
 
 // --- 전역 변수 ---
-extern const unsigned int SCR_WIDTH;
-extern const unsigned int SCR_HEIGHT;
+extern unsigned int SCR_WIDTH;
+extern unsigned int SCR_HEIGHT;
 
 // 맵 설정 (1000 x 1000)
 extern const int MAP_SIZE;

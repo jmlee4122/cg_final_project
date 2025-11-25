@@ -280,7 +280,7 @@ GLuint make_shaderProgram()
 
 void SetProjMatMain() {
 	float fovy = glm::radians(60.0f);
-	float aspect = (float)window_w / (float)window_h;
+	float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 	float zNear = 0.1f;
 	float zFar = 1000.0f;
 	gProjMat = glm::perspective(fovy, aspect, zNear, zFar);

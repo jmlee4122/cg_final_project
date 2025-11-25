@@ -5,8 +5,7 @@
 GLuint vertexShader;
 GLuint fragmentShader;
 GLuint shaderProgramID;
-int window_w = 1400;
-int window_h = 800;
+
 int minimap_size = 300;
 
 glm::mat4 gViewMat = glm::mat4(1.0);
@@ -26,8 +25,8 @@ CameraSub* mySubCamera = nullptr;
 
 
 // --- 전역 변수 ---
-const unsigned int SCR_WIDTH = 1920;
-const unsigned int SCR_HEIGHT = 1080;
+unsigned int SCR_WIDTH = 1920;
+unsigned int SCR_HEIGHT = 1080;
 
 const int MAP_SIZE = 1000;
 const float BLOCK_SIZE = 1.0f;

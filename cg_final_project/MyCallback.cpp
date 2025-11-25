@@ -50,7 +50,7 @@ GLvoid DrawScene() {
 	// --- 렌더링 시작 ---
 	glClearColor(currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1.0f); // 배경 초기화색도 맞춤
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, window_w, window_h);
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	// change view & projection matrix
 	// draw main screen
 	if (myMainCamera) {
@@ -136,8 +136,8 @@ GLvoid DrawScene() {
 }
 
 GLvoid Reshape(int w, int h) {
-	window_w = w;
-	window_h = h;
+	SCR_WIDTH = w;
+	SCR_HEIGHT = h;
 }
 
 GLvoid Keyboard(unsigned char key, int x, int y) {
