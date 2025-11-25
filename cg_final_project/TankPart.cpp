@@ -15,7 +15,8 @@
 
 TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
-	this->modelMat = glm::mat4(1.0);
+	//this->modelMat = glm::mat4(1.0);
+	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f));
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
@@ -71,8 +72,10 @@ void TankPart::DrawPart(std::string str) { // recursion
 	glUseProgram(shaderProgramID);
 	glBindVertexArray(VAO);
 
-	glUniform3f(uLightPosLoc, 0.0, 200.0, 100.0);
-	glUniform3f(uLightColorLoc, 1.0, 1.0, 1.0);
+	//glUniform3f(uLightPosLoc, 0.0, 200.0, 100.0);
+	//glUniform3f(uLightColorLoc, 1.0, 1.0, 1.0);
+	glUniform3f(uLightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(uLightColorLoc, lightColor.x, lightColor.y, lightColor.z);
 
 	glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
 	glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, glm::value_ptr(gViewMat));

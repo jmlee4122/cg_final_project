@@ -12,9 +12,9 @@ int minimap_size = 300;
 glm::mat4 gViewMat = glm::mat4(1.0);
 glm::mat4 gProjMat = glm::mat4(1.0);
 
-float gTankSize_width = 10.0f;
-float gTankSize_height = 7.0f;
-float gTankSize_depth = 20.0f;
+float gTankSize_width = 10.0f / 10.0f;
+float gTankSize_height = 7.0f / 10.0f;
+float gTankSize_depth = 20.0f / 10.0f;
 
 //float gravity = 9.8f;
 

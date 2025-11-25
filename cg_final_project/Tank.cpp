@@ -37,13 +37,13 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->modelMat = glm::mat4(1.0);
 
     // init speed and acceleration (translation)
-    this->maxSpeed = 1.0f;
-    this->acceleration = 0.02f; // per frame
-    this->deceleration = 0.02f; // per frame
+    this->maxSpeed = 0.5f;
+    this->acceleration = 0.01f; // per frame
+    this->deceleration = 0.01f; // per frame
     this->currentSpeed = 0.0f;
 
     // init speed and radians (rotation)
-    this->rRadians = 1.0f;
+    this->rRadians = 0.3f;
     this->rVelocity = this->maxSpeed / this->rRadians;
 
     // setting camera (myExtern)
@@ -120,7 +120,6 @@ void Tank::SetTransMat() {
     }
 }
 void Tank::SetRotateMat() {
-    // isFront == isBack => not ratating
     // isLeft == isRight => not rotating
     if (this->isLeft == this->isRight) {
         this->rotateMat = glm::mat4(1.0);
@@ -128,10 +127,12 @@ void Tank::SetRotateMat() {
     // rotating
     else {
         float w = 0.0f;
-        if ((this->isLeft && this->isFront) || (this->isRight && this->isBack)) {
+        if ((this->isLeft && this->currentSpeed > 0.0f) ||
+            (this->isRight && this->currentSpeed < 0.0f)) {
             w = this->rVelocity; // ccw
         }
-        if (this->isRight && this->isFront || (this->isLeft && this->isBack)) {
+        if (this->isRight && this->currentSpeed > 0.0f ||
+            (this->isLeft && this->currentSpeed < 0.0f)) {
             w = -1.0f * this->rVelocity; // cw
         }
         glm::mat4 t1 = glm::translate(glm::mat4(1.0), -1.0f * this->center);
