@@ -200,3 +200,33 @@ GLvoid Mouse(int button, int state, int x, int y) {
 GLvoid MouseMotion(int x, int y) {
 
 }
+
+GLvoid PassiveMotion(int x, int y) {
+	// 화면 중앙 좌표 계산
+	int centerX = SCR_WIDTH / 2;
+	int centerY = SCR_HEIGHT / 2;
+
+	// 1. 만약 마우스가 이미 중앙에 있다면 계산할 필요 없음 
+	// (glutWarpPointer로 인해 호출된 경우 무시)
+	if (x == centerX && y == centerY) return;
+
+	// 2. 중앙을 기준으로 얼마나 움직였는지 차이(Offset) 계산
+	float xoffset = (float)(x - centerX);
+	float yoffset = (float)(centerY - y); // Y좌표는 위로 갈수록 작아지므로 반대로 계산
+
+	// 3. 감도 적용 및 각도 업데이트
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	// 마우스 움직임 방향대로 카메라 회전 (이전 요청 반영: -= 사용)
+	yaw -= xoffset;
+	pitch -= yoffset;
+
+	// 각도 제한
+	if (pitch > 89.0f) pitch = 89.0f;
+	if (pitch < 5.0f) pitch = 5.0f;
+
+	// 4. [핵심] 마우스를 다시 화면 중앙으로 강제 이동
+	glutWarpPointer(centerX, centerY);
+}
