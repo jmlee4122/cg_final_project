@@ -586,10 +586,33 @@ void Init() {
 	float centerHeight = GetTerrainHeight(0.0f, 0.0f);
 
 	// 중앙 높이보다 2.0f만큼 위에서 시작 (안전하게 착지하도록)
-	objectPos = glm::vec3(0.0f, centerHeight + 2.0f, 0.0f);
-	cameraTarget = objectPos;
+	//objectPos = glm::vec3(0.0f, centerHeight + 2.0f, 0.0f);
+	//cameraTarget = objectPos;
 
 	std::cout << "Spawned at Center Height: " << centerHeight << std::endl;
 
-	for (int i = 0; i < 256; i++) keyState[i] = false;
+	//for (int i = 0; i < 256; i++) keyState[i] = false;
+}
+
+bool CheckCollision(float targetX, float targetZ, float footY) {
+	// 충돌 박스 크기 (플레이어 크기의 절반보다 살짝 작게 설정하여 끼임 방지)
+	// playerSize가 0.8이므로 반경은 0.4지만, 0.3 정도로 여유를 둠
+
+	// 검사할 4개의 모서리 좌표
+	float corners[4][2] = {
+		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 위
+		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 오른쪽 위
+		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 아래
+		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }  // 오른쪽 아래
+	};
+
+	// 4개 모서리 중 하나라도 높은 벽에 닿으면 충돌로 간주
+	for (int i = 0; i < 4; ++i) {
+		float h = GetTerrainHeight(corners[i][0], corners[i][1]);
+		// 등반 허용 높이 (0.1f) - 이보다 높으면 벽으로 인식
+		if (h > footY + 0.1f) {
+			return true; // 충돌
+		}
+	}
+	return false; // 안전함
 }

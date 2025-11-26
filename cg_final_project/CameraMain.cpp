@@ -10,6 +10,7 @@
 #include "MyExtern.h"
 #include "MyStruct.h"
 #include "CameraMain.h"
+#include "Tank.h"
 
 CameraMain::CameraMain(glm::vec3 &c, glm::vec3 &v) { // c : center, v : view point
 	this->camera_d = gTankSize_depth * 10.0f;
@@ -37,9 +38,11 @@ void CameraMain::ChangeViewMat() const {
 
 void CameraMain::UpdateVectors() {
 	// update at vector
-	glm::vec4 vector = glm::vec4(this->at, 1); // order : 3 -> 4
-	vector = this->modelMat * vector;
-	this->at = glm::vec3(vector); // order : 4 -> 3
+	//glm::vec4 vector = glm::vec4(this->at, 1); // order : 3 -> 4
+	//vector = this->modelMat * vector;
+	//this->at = glm::vec3(vector); // order : 4 -> 3
+	glm::vec3 c = myTank->GetCenter();
+	this->at = glm::vec3(c.x, 0, c.z);
 
 	// update eye vector
 	this->eye.x = this->at.x + camera_d * cos(glm::radians(pitch)) * sin(glm::radians(yaw));

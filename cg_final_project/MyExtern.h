@@ -57,11 +57,11 @@ extern float objectSpeed;
 extern float playerSize;
 
 // 물리
-extern float verticalVelocity;
-extern float gravity;
-extern float jumpForce;
-extern bool isGrounded;
-extern bool keyState[256];
+//extern float verticalVelocity;
+//extern float gravity;
+//extern float jumpForce;
+//extern bool isGrounded;
+//extern bool keyState[256];
 
 // 카메라
 extern glm::vec3 cameraTarget;

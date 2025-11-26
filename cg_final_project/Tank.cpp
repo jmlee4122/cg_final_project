@@ -120,6 +120,16 @@ void Tank::SetTransMat() {
     else {
         glm::vec3 frontVector = glm::normalize(this->frontVec);
         glm::vec3 move = this->currentSpeed * frontVector;
+
+        float currentFootY = this->center.y;
+        float nextX = this->center.x + move.x;
+        if (CheckCollision(nextX, this->center.z, currentFootY)) {
+            move.x = 0.0f; // 충돌 있으면 이동 적용 x
+        }
+        float nextZ = this->center.z + move.z;
+        if (CheckCollision(this->center.x, nextZ, currentFootY)) {
+            move.z = 0.0f; // 충돌 있으면 이동 적용 x
+        }
         this->transMat = glm::translate(glm::mat4(1.0), move);
     }
 }

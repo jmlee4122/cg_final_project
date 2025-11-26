@@ -41,11 +41,11 @@ float objectSpeed = 20.0f;
 float playerSize = 0.8f;
 
 // 물리
-float verticalVelocity = 0.0f;
-float gravity = 30.0f;
-float jumpForce = 10.0f;
-bool isGrounded = false;
-bool keyState[256];
+//float verticalVelocity = 0.0f;
+//float gravity = 30.0f;
+//float jumpForce = 10.0f;
+//bool isGrounded = false;
+//bool keyState[256];
 
 // 카메라
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
