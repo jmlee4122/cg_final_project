@@ -222,6 +222,7 @@ GLvoid Mouse(int button, int state, int x, int y) {
 			myTank->attack();
 		}
 	}
+	glutPostRedisplay();
 }
 GLvoid MouseMotion(int x, int y) {
 
