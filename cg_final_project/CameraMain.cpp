@@ -42,7 +42,7 @@ void CameraMain::UpdateVectors() {
 	//vector = this->modelMat * vector;
 	//this->at = glm::vec3(vector); // order : 4 -> 3
 	glm::vec3 c = myTank->GetCenter();
-	this->at = glm::vec3(c.x, 0, c.z);
+	this->at = glm::vec3(c.x, c.y, c.z);
 
 	// update eye vector
 	this->eye.x = this->at.x + camera_d * cos(glm::radians(pitch)) * sin(glm::radians(yaw));
