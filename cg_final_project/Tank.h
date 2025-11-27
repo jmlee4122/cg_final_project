@@ -39,7 +39,7 @@ public:
 private:
 	bool isFront, isBack;
 	bool isLeft, isRight;
-	bool isJumping;
+	bool isJumping, isOnGround;
 
 	TankPart* bottom; // (bottom->mid->top->barrel)
 	TankPart* mid;
@@ -60,6 +60,10 @@ private:
 
 	float rVelocity; // rotation velocity
 	float rRadians; // rotation radians
+
+	float yVelocity;
+	float jumpForce;
+	float gravity;
 
 	float barrelLen;
 	glm::vec3 viewPoint;

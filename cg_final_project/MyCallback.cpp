@@ -166,6 +166,9 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	case 'd':
 		if (myTank) myTank->SetIsRight(true);
 		break;
+	case ' ':
+		if (myTank) myTank->SetIsJumping(true);
+		break;
 	case 'q':
 		glutLeaveMainLoop();
 		break;

@@ -30,7 +30,7 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
 
     this->isFront = false, this->isBack = false;
     this->isLeft = false, this->isRight = false;
-    this->isJumping = false;
+    this->isJumping = false, this->isOnGround = true;
 
     this->center = glm::vec3(0, 0, 0);
     this->frontVec = glm::vec3(0, 0, 1);
@@ -41,12 +41,16 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     // init speed and acceleration (translation)
     this->maxSpeed = 0.5f;
     this->acceleration = 1.0f; // per frame
-    this->deceleration = 2.0f; // per frame
+    this->deceleration = 1.0f; // per frame
     this->currentSpeed = 0.0f;
 
     // init speed and radians (rotation)
     this->rRadians = 0.15f;
     this->rVelocity = this->currentSpeed / this->rRadians;
+
+    this->yVelocity = 0.0f;
+    this->jumpForce = 15.0f;
+    this->gravity = -1.0f;
 
     this->barrelLen = 1.3f;
 
@@ -82,6 +86,8 @@ void Tank::Update() {
 }
 void Tank::SetTransMat() {
     float targetSpeed = 0.0f;
+    glm::vec3 transVec = glm::vec3(0, 0, 0);
+    glm::vec3 jumpVec = glm::vec3(0, 0, 0);
 
     // go forward => target speed : plus max speed
     if (isFront && !isBack) targetSpeed = this->maxSpeed;
@@ -109,24 +115,44 @@ void Tank::SetTransMat() {
     // current speed : nearly 0 => 0 (standing)
     if (glm::abs(this->currentSpeed) < 0.001f) {
         this->currentSpeed = 0.0f;
-        this->transMat = glm::mat4(1.0);
+        transVec = glm::vec3(0, 0, 0);
     }
     else {
         glm::vec3 frontVector = glm::normalize(this->frontVec);
-        glm::vec3 move = this->currentSpeed * frontVector;
+        transVec = this->currentSpeed * frontVector;
 
         float currentFootY = this->center.y;
-        float nextX = this->center.x + move.x;
+        float nextX = this->center.x + transVec.x;
         if (CheckCollision(nextX, this->center.z, currentFootY)) {
-            move.x = 0.0f; // 충돌 있으면 이동 적용 x
+            transVec.x = 0.0f; // 충돌 있으면 이동 적용 x
         }
-        float nextZ = this->center.z + move.z;
+        float nextZ = this->center.z + transVec.z;
         if (CheckCollision(this->center.x, nextZ, currentFootY)) {
-            move.z = 0.0f; // 충돌 있으면 이동 적용 x
+            transVec.z = 0.0f; // 충돌 있으면 이동 적용 x
         }
-        this->transMat = glm::translate(glm::mat4(1.0), move);
     }
+
+    if (isJumping) {
+        if (isOnGround) {
+            this->isOnGround = false;
+            this->yVelocity = this->jumpForce;
+        }
+        else {
+            this->yVelocity += this->gravity;
+        }
+    }
+    float nextY = this->center.y + (this->yVelocity * gDeltaTime);
+    if (nextY <= GetTerrainHeight(this->center.x, this->center.z)) {
+        nextY = GetTerrainHeight(this->center.x, this->center.z);
+        this->isOnGround = true;
+        this->isJumping = false;
+    }
+    float deltaY = nextY - this->center.y;
+    jumpVec = glm::vec3(0, deltaY, 0);
+    glm::vec3 move = transVec + jumpVec;
+    this->transMat = glm::translate(glm::mat4(1.0), move);
 }
+
 void Tank::SetRotateMat() {
     // isLeft == isRight => not rotating
     if (this->isLeft == this->isRight) {
