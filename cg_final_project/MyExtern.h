@@ -72,7 +72,7 @@ extern float pitch;
 extern float lastX;
 extern float lastY;
 extern bool firstMouse;
-extern float deltaTime;
+extern float gDeltaTime;
 extern float lastFrame;
 
 // OpenGL ÀÚ¿ø

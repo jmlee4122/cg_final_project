@@ -23,7 +23,7 @@
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	deltaTime = currentFrame - lastFrame;
+	gDeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	// 1. 시간 흐름 계산 (3분 = 180초)

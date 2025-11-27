@@ -40,8 +40,8 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
 
     // init speed and acceleration (translation)
     this->maxSpeed = 0.5f;
-    this->acceleration = 0.01f; // per frame
-    this->deceleration = 0.02f; // per frame
+    this->acceleration = 1.0f; // per frame
+    this->deceleration = 2.0f; // per frame
     this->currentSpeed = 0.0f;
 
     // init speed and radians (rotation)
@@ -84,29 +84,23 @@ void Tank::SetTransMat() {
     float targetSpeed = 0.0f;
 
     // go forward => target speed : plus max speed
-    if (isFront && !isBack) {
-        targetSpeed = this->maxSpeed;
-    }
+    if (isFront && !isBack) targetSpeed = this->maxSpeed;
     // go backward => target speed : minus max speed
-    else if (!isFront && isBack) {
-        targetSpeed = -1.0f * this->maxSpeed;
-    }
+    else if (!isFront && isBack) targetSpeed = -1.0f * this->maxSpeed;
     // standing => target speed : 0
-    else {
-        targetSpeed = 0.0f;
-    }
+    else targetSpeed = 0.0f;
 
     // acceleration or deceleration
     if (this->currentSpeed < targetSpeed) {
         // acceleration
-        this->currentSpeed += this->acceleration;
+        this->currentSpeed += this->acceleration * gDeltaTime;
         if (targetSpeed < this->currentSpeed) {
             this->currentSpeed = targetSpeed;
         }
     }
     else if (targetSpeed < this->currentSpeed) {
         // deceleration
-        this->currentSpeed -= (targetSpeed == 0.0f) ? this->deceleration : this->acceleration;
+        this->currentSpeed -= (targetSpeed == 0.0f) ? this->deceleration * gDeltaTime : this->acceleration * gDeltaTime;
         if (this->currentSpeed < targetSpeed) {
             this->currentSpeed = targetSpeed;
         }

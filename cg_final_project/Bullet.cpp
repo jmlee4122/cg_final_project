@@ -22,7 +22,7 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc)
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
-	this->velocity = 1.0f;
+	this->velocity = 60.0f;
 	this->center = loc;
 	this->viewPoint = glm::vec3(0, 0, 0);
 	this->target = target;
@@ -72,7 +72,7 @@ void Bullet::SetViewPoint() {
 
 void Bullet::SetModelMat() {
 	// 다음 움직임을 적용하는 행렬 결정
-	glm::vec3 deltaMove = this->velocity * this->viewPoint;
+	glm::vec3 deltaMove = this->velocity * this->viewPoint * gDeltaTime;
 	this->transMat = glm::translate(glm::mat4(1.0), deltaMove);
 	this->modelMat = this->transMat * this->modelMat;
 }

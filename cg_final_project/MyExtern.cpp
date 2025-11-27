@@ -56,7 +56,7 @@ float pitch = 35.0f;
 float lastX = SCR_WIDTH / 2.0;
 float lastY = SCR_HEIGHT / 2.0;
 bool firstMouse = true;
-float deltaTime = 0.0f;
+float gDeltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // OpenGL ÀÚ¿ø
