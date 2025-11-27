@@ -16,6 +16,7 @@
 
 Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
+	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
@@ -59,7 +60,17 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 }
 
 Monster::~Monster() {
-
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO_pos);
+	glDeleteBuffers(1, &VBO_nol);
+	glDeleteBuffers(1, &EBO);
+	if (this->model != nullptr) {
+		if (this->model->vertices) delete[] this->model->vertices;
+		if (this->model->normals) delete[] this->model->normals;
+		if (this->model->faces) delete[] this->model->faces;
+		delete this->model;
+		this->model = nullptr;
+	}
 }
 
 void Monster::SetColor() {

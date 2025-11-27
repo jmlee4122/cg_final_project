@@ -22,6 +22,7 @@ public:
     void TakeDamage(float attack);
 
 private:
+    Model* model;
     GLuint VAO;
     GLuint VBO_pos, VBO_nol, EBO;
     GLuint vCount, fCount;

@@ -21,6 +21,7 @@ public:
     void Draw(std::string camera);
 
 private:
+    Model* model;
     GLuint VAO;
     GLuint VBO_pos, VBO_nol, EBO;
     GLuint vCount, fCount;

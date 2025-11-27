@@ -14,6 +14,7 @@
 #include "CameraSub.h"
 
 TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
+	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	//this->modelMat = glm::mat4(1.0);
 	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f));
@@ -46,7 +47,17 @@ TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 }
 TankPart::~TankPart() {
-
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO_pos);
+	glDeleteBuffers(1, &VBO_nol);
+	glDeleteBuffers(1, &EBO);
+	if (this->model != nullptr) {
+		if (this->model->vertices) delete[] this->model->vertices;
+		if (this->model->normals) delete[] this->model->normals;
+		if (this->model->faces) delete[] this->model->faces;
+		delete this->model;
+		this->model = nullptr;
+	}
 }
 
 void TankPart::SetColor() {

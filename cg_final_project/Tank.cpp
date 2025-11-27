@@ -64,7 +64,22 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     mySubCamera = new CameraSub(this->center, this->frontVec);
 }
 Tank::~Tank() {
-    // later
+    if (this->bottom) {
+        delete this->bottom;
+        this->bottom = nullptr;
+    }
+    if (this->mid) {
+        delete this->mid;
+        this->mid = nullptr;
+    }
+    if (this->top) {
+        delete this->top;
+        this->top = nullptr;
+    }
+    if (this->barrel) {
+        delete this->barrel;
+        this->barrel = nullptr;
+    }
 }
 
 void Tank::SetIsFront(bool value) { this->isFront = value; }
