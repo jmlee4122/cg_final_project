@@ -10,7 +10,7 @@ class Monster;
 class Bullet
 {
 public:
-    Bullet(Model* model, Monster* target, glm::vec3 loc); // 포탄은 몬스터를 포인터로 받음
+    Bullet(Model* model, Monster* target, glm::vec3 loc, float attack); // 포탄은 몬스터를 포인터로 받음
     ~Bullet();
     void SetColor();
     void SetViewPoint();
@@ -33,5 +33,6 @@ private:
     glm::vec3 viewPoint;
     glm::vec3 center;
     float velocity;
+    float atk;
 };
 

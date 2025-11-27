@@ -27,6 +27,10 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->modelMat = glm::translate(glm::mat4(1.0), this->center);
 	this->transMat = glm::mat4(1.0);
 
+	this->atk = 5.0f;
+	this->hp = 10.0f;
+	this->isDestroyed = false;
+
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -119,4 +123,14 @@ void Monster::Draw(std::string camera) {
 
 	//std::cout << "Monster x : " << this->center.x << "//";
 	//std::cout << "Monster x : " << this->center.z << "//" << std::endl;
+}
+
+void Monster::TakeDamage(float attack) {
+	if (this->hp - attack <= 0.0f) {
+		this->hp = 0.0f;
+		this->isDestroyed = true;
+	}
+	else {
+		this->hp -= attack;
+	}
 }

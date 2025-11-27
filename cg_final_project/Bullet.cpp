@@ -15,7 +15,7 @@
 #include "Monster.h"
 
 // 탱크가 attack 시에 생성자 호출
-Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc)
+Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	: VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
@@ -28,6 +28,8 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc)
 	this->target = target;
 	this->modelMat = glm::translate(glm::mat4(1.0), this->center);
 	this->transMat = glm::mat4(1.0);
+
+	this->atk = attack;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {

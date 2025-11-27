@@ -54,6 +54,11 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
 
     this->barrelLen = 1.3f;
 
+    this->nearest = nullptr;
+    this->atk = 10.0f;
+    this->hp = 100.0f;
+    this->isDestroyed = false;
+
     // setting camera (myExtern)
     myMainCamera = new CameraMain(this->center, this->frontVec);
     mySubCamera = new CameraSub(this->center, this->frontVec);
@@ -182,6 +187,9 @@ void Tank::SetRemaining() {
     vector = glm::vec4(this->frontVec, 0); // order : 3 -> 4
     vector = this->rotateMat * vector;
     this->frontVec = glm::normalize(glm::vec3(vector)); // order : 4 -> 3
+
+    // updating nearest monster
+    this->nearest = NearestMonster();
 }
 
 void Tank::DrawAllPart(std::string str) {
@@ -192,16 +200,17 @@ void Tank::DrawAllPart(std::string str) {
 glm::vec3 Tank::GetCenter() {
     return this->center;
 }
+Monster* Tank::GetNearest() {
+    return nearest;
+}
 
 void Tank::attack() {
-    // NearestMonster() : 현재 위치에서 가장 가까운 몬스터 찾기
-    Monster* target = NearestMonster();
-    if (target == nullptr) return;
+    if (this->nearest == nullptr) return;
     // GetBulletInitLoc() : 현재 위치에서 포탄이 생성될 위치 (포구 바로 앞)
     glm::vec3 location = GetBulletInitLoc();
     Model* bulletModel = new Model;
     read_obj_file("bullet.obj", bulletModel);
-    Bullet* newBullet = new Bullet(bulletModel, target, location);
+    Bullet* newBullet = new Bullet(bulletModel, this->nearest, location, this->atk);
     myBullets.push_back(newBullet);
 }
 
@@ -230,4 +239,14 @@ glm::vec3 Tank::GetBulletInitLoc() {
     glm::vec3 loc = glm::vec3(0, 0, 0);
     loc = this->center + (this->barrelLen * this->viewPoint);
     return loc;
+}
+
+void Tank::TakeDamage(float attack) {
+    if (this->hp - attack <= 0.0f) {
+        this->hp = 0.0f;
+        this->isDestroyed = true;
+    }
+    else {
+        this->hp -= attack;
+    }
 }

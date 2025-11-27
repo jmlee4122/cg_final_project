@@ -19,6 +19,7 @@ public:
     void Update();
     glm::vec3 GetCenter();
     void Draw(std::string camera);
+    void TakeDamage(float attack);
 
 private:
     GLuint VAO;
@@ -33,5 +34,8 @@ private:
     glm::vec3 viewPoint;
     glm::vec3 center;
     float velocity;
+    float atk;
+    float hp;
+    bool isDestroyed;
 };
 

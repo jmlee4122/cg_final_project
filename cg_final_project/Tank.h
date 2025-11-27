@@ -31,10 +31,13 @@ public:
 	void DrawAllPart(std::string str);
 	// pass center to Monsters
 	glm::vec3 GetCenter();
+	// pass neartest monster to bulletW
+	Monster* GetNearest();
 
 	void attack();
 	Monster* NearestMonster();
 	glm::vec3 GetBulletInitLoc();
+	void TakeDamage(float attack);
 
 private:
 	bool isFront, isBack;
@@ -67,5 +70,11 @@ private:
 
 	float barrelLen;
 	glm::vec3 viewPoint;
+
+	Monster* nearest;
+
+	float atk;
+	float hp;
+	bool isDestroyed;
 };
 
