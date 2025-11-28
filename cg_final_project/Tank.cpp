@@ -158,15 +158,14 @@ void Tank::SetTransMat() {
             this->isOnGround = false;
             this->yVelocity = this->jumpForce;
         }
-        else {
-            this->yVelocity += this->gravity;
-        }
     }
+    this->yVelocity += this->gravity;
     float nextY = this->center.y + (this->yVelocity * gDeltaTime);
     if (nextY <= GetTerrainHeight(this->center.x, this->center.z)) {
         nextY = GetTerrainHeight(this->center.x, this->center.z);
         this->isOnGround = true;
         this->isJumping = false;
+        this->yVelocity = 0.0f;
     }
     float deltaY = nextY - this->center.y;
     jumpVec = glm::vec3(0, deltaY, 0);
