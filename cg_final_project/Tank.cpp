@@ -37,6 +37,9 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->transMat = glm::mat4(1.0);
     this->rotateMat = glm::mat4(1.0);
     this->modelMat = glm::mat4(1.0);
+    this->viewPoint = this->frontVec;
+    this->viewRotSpeed = 8.0f;
+    this->viewRotateMat = glm::mat4(1.0);
 
     // init speed and acceleration (translation)
     this->maxSpeed = 0.5f;
@@ -89,14 +92,19 @@ void Tank::SetIsRight(bool value) { this->isRight = value; }
 void Tank::SetIsJumping(bool value) { this->isJumping = value; }
 
 void Tank::Update() {
+    // find & update nearest monster
+    this->nearest = NearestMonster();
+
     // update matrix
     SetTransMat();
     SetRotateMat();
+    SetViewRotMat();
     SetModelMat();
     
-    glm::mat4 transformMat = this->transMat * this->rotateMat;
-
+    this->top->SetModelMat(this->viewRotateMat);
+    
     // from bottom to barrel (recursion)
+    glm::mat4 transformMat = this->transMat * this->rotateMat;
     this->bottom->SetModelMat(transformMat);
 
     // update camera
@@ -192,9 +200,56 @@ void Tank::SetRotateMat() {
         this->rotateMat = t2 * r * t1;
     }
 }
+void Tank::SetViewRotMat() {
+    glm::vec3 targetVec = glm::vec3(0, 0, 0);
+
+    if (this->nearest == nullptr) {
+        targetVec = this->frontVec;
+    }
+    else {
+        glm::vec3 nc = this->nearest->GetCenter();
+
+        targetVec.x = nc.x - this->center.x;
+        targetVec.y = 0.0f;
+        targetVec.z = nc.z - this->center.z;
+    }
+    float len = 
+        (targetVec.x * targetVec.x) +
+        (targetVec.y * targetVec.y) +
+        (targetVec.z * targetVec.z);
+    if (len < 0.001f) {
+        this->viewRotateMat = glm::mat4(1.0);
+        return;
+    }
+
+    glm::vec3 normViewPoint = glm::normalize(this->viewPoint);
+    glm::vec3 normTargetVec = glm::normalize(targetVec);
+    float cosTheta = glm::dot(normViewPoint, normTargetVec);
+    float degree = acos(glm::clamp(cosTheta, -1.0f, 1.0f));
+    // (+) : left side, (-) : right side
+    float dirSign = glm::cross(normViewPoint, normTargetVec).y;
+    float viewRotRadian = 0.0f;
+    if (dirSign > 0.0f) {
+        viewRotRadian = degree * this->viewRotSpeed;
+    }
+    else if (dirSign < 0.0f) {
+        viewRotRadian = -degree * this->viewRotSpeed;
+    }
+    else {
+        viewRotRadian = 0.0f;
+    }
+
+    glm::mat4 t1 = glm::translate(glm::mat4(1.0), -this->center);
+    glm::mat4 r = glm::rotate(
+        glm::mat4(1.0), glm::radians(viewRotRadian), glm::vec3(0, 1, 0));
+    glm::mat4 t2 = glm::translate(glm::mat4(1.0), this->center);
+
+    this->viewRotateMat = t2 * r * t1;
+}
 void Tank::SetModelMat() {
     this->modelMat = this->transMat * this->rotateMat * this->modelMat;
 }
+
 void Tank::SetRemaining() {
     // updating center
     glm::vec4 vector = glm::vec4(this->center, 1); // order : 3 -> 4
@@ -206,8 +261,10 @@ void Tank::SetRemaining() {
     vector = this->rotateMat * vector;
     this->frontVec = glm::normalize(glm::vec3(vector)); // order : 4 -> 3
 
-    // updating nearest monster
-    this->nearest = NearestMonster();
+    // updating view point
+    vector = glm::vec4(this->viewPoint, 0);
+    vector = this->rotateMat * this->viewRotateMat * vector;
+    this->viewPoint = glm::normalize(glm::vec3(vector));
 }
 
 void Tank::DrawAllPart(std::string str) {

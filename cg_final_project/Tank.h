@@ -26,6 +26,7 @@ public:
 	void Update();
 	void SetTransMat();
 	void SetRotateMat();
+	void SetViewRotMat();
 	void SetModelMat();
 	void SetRemaining();
 	// draw
@@ -53,10 +54,14 @@ private:
 
 	glm::vec3 center; // for updating camera vec
 	glm::vec3 frontVec; // for updating camera vec
+	glm::vec3 viewPoint;
 
 	glm::mat4 transMat; // press 'w' or 's' (Apply to bottom, mid, top, barrel)
 	glm::mat4 rotateMat; // press 'a' or 'd' (Apply to bottom, mid, top, barrel)
 	glm::mat4 modelMat; // transMat * rotateMat (final transformation matrix)
+	
+	float viewRotSpeed;
+	glm::mat4 viewRotateMat;
 
 	float maxSpeed;
 	float acceleration;
@@ -71,7 +76,6 @@ private:
 	float gravity;
 
 	float barrelLen;
-	glm::vec3 viewPoint;
 
 	Monster* nearest;
 

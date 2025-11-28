@@ -78,7 +78,12 @@ Monster::~Monster() {
 }
 
 void Monster::SetColor() {
-	this->uColor = glm::vec3(0.0, 1.0, 0.0);
+	if (this->hp > 10.0f) {
+		this->uColor = glm::vec3(0.0, 1.0, 0.0);
+	}
+	else {
+		this->uColor = glm::vec3(1.0, 1.0, 0.0);
+	}
 }
 
 void Monster::SetViewPoint() {
@@ -115,6 +120,7 @@ void Monster::Update() {
 		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
 		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
 		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+		SetColor();
 	}
 }
 

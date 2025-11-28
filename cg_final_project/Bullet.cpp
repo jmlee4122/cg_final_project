@@ -60,6 +60,8 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+
+	std::cout << "bullet loc: " << this->center.x << " " << this->center.y << std::endl;
 }
 
 Bullet::~Bullet() {
