@@ -156,7 +156,23 @@ bool Monster::GetDestroyed() {
 }
 
 bool Monster::CollisionWithTarget() {
-	// collision ±¸Çö
+	glm::mat4 targetModelMat = this->target->GetModelMat();
+	glm::mat4 inverseMat = glm::inverse(targetModelMat);
+	glm::vec4 vec = inverseMat * glm::vec4(this->center, 1);
+	glm::vec3 localCenter = glm::vec3(vec);
+	glm::vec3 nearestPoint = glm::vec3(0, 0, 0);
+	nearestPoint.x = glm::clamp(localCenter.x, -gTankSize_width / 2.0f, gTankSize_width / 2.0f);
+	nearestPoint.y = glm::clamp(localCenter.y, -gTankSize_height / 2.0f, gTankSize_height / 2.0f);
+	nearestPoint.z = glm::clamp(localCenter.z, -gTankSize_depth / 2.0f, gTankSize_depth / 2.0f);
+
+	float distance =
+		(nearestPoint.x - localCenter.x) * (nearestPoint.x - localCenter.x) +
+		(nearestPoint.y - localCenter.y) * (nearestPoint.y - localCenter.y) +
+		(nearestPoint.z - localCenter.z) * (nearestPoint.z - localCenter.z);
+
+	if (distance <= this->boundRadius * this->boundRadius) {
+		return true;
+	}
 	return false;
 }
 

@@ -92,16 +92,17 @@ void Tank::Update() {
     // update matrix
     SetTransMat();
     SetRotateMat();
-    // update modelMat (final transformation matrix)
-    this->modelMat = this->transMat * this->rotateMat;
+    SetModelMat();
+    
+    glm::mat4 transformMat = this->transMat * this->rotateMat;
 
     // from bottom to barrel (recursion)
-    this->bottom->SetModelMat(this->modelMat);
+    this->bottom->SetModelMat(transformMat);
 
     // update camera
     SetRemaining();
     //UpdateCameraVectors(this->modelMat, this->center, this->frontVec); // in MyUtils.h
-    myMainCamera->SetModelMat(this->modelMat);
+    myMainCamera->SetModelMat(transformMat);
     mySubCamera->SetCenterViewPoint(this->center, this->frontVec);
 }
 void Tank::SetTransMat() {
@@ -192,6 +193,9 @@ void Tank::SetRotateMat() {
         this->rotateMat = t2 * r * t1;
     }
 }
+void Tank::SetModelMat() {
+    this->modelMat = this->transMat * this->rotateMat * this->modelMat;
+}
 void Tank::SetRemaining() {
     // updating center
     glm::vec4 vector = glm::vec4(this->center, 1); // order : 3 -> 4
@@ -217,6 +221,9 @@ glm::vec3 Tank::GetCenter() {
 }
 Monster* Tank::GetNearest() {
     return nearest;
+}
+glm::mat4 Tank::GetModelMat() {
+    return this->modelMat;
 }
 
 void Tank::attack() {
@@ -264,4 +271,5 @@ void Tank::TakeDamage(float attack) {
     else {
         this->hp -= attack;
     }
+    //std::cout << this->hp << " ";
 }

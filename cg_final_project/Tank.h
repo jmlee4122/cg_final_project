@@ -26,6 +26,7 @@ public:
 	void Update();
 	void SetTransMat();
 	void SetRotateMat();
+	void SetModelMat();
 	void SetRemaining();
 	// draw
 	void DrawAllPart(std::string str);
@@ -33,6 +34,7 @@ public:
 	glm::vec3 GetCenter();
 	// pass neartest monster to bulletW
 	Monster* GetNearest();
+	glm::mat4 GetModelMat();
 
 	void attack();
 	Monster* NearestMonster();
