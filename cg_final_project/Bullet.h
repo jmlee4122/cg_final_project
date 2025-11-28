@@ -19,6 +19,8 @@ public:
     void Update();
     glm::vec3 GetCenter();
     void Draw(std::string camera);
+    bool GetDestroyed();
+    bool CollisionWithTarget();
 
 private:
     Model* model;
@@ -35,5 +37,7 @@ private:
     glm::vec3 center;
     float velocity;
     float atk;
+    bool isDestroyed;
+    float boundRadius;
 };
 

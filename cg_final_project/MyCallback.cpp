@@ -207,12 +207,15 @@ GLvoid Timer(int value) {
 		for (auto r : myBullets) {
 			r->Update();
 		}
+		RemoveDestroyed(myBullets);
 	}
 	if (!myMonsters.empty()) {
 		for (auto r : myMonsters) {
 			r->Update();
 		}
+		RemoveDestroyed(myMonsters);
 	}
+	
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 	glutPostRedisplay();

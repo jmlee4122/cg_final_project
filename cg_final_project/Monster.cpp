@@ -29,8 +29,9 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->transMat = glm::mat4(1.0);
 
 	this->atk = 5.0f;
-	this->hp = 10.0f;
+	this->hp = 20.0f;
 	this->isDestroyed = false;
+	this->boundRadius = 0.5f;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -65,9 +66,9 @@ Monster::~Monster() {
 	glDeleteBuffers(1, &VBO_nol);
 	glDeleteBuffers(1, &EBO);
 	if (this->model != nullptr) {
-		if (this->model->vertices) delete[] this->model->vertices;
-		if (this->model->normals) delete[] this->model->normals;
-		if (this->model->faces) delete[] this->model->faces;
+		if (this->model->vertices) free(this->model->vertices);
+		if (this->model->normals) free(this->model->normals);
+		if (this->model->faces) free(this->model->faces);
 		delete this->model;
 		this->model = nullptr;
 	}
@@ -98,6 +99,10 @@ void Monster::SetCenter() {
 }
 
 void Monster::Update() {
+	if (CollisionWithTarget()) {
+		// 자신의 공격력으로 target 에게 피해를 입힘
+		this->target->TakeDamage(this->atk);
+	}
 	// 순서가 중요
 	SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
 	SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
@@ -144,4 +149,17 @@ void Monster::TakeDamage(float attack) {
 	else {
 		this->hp -= attack;
 	}
+}
+
+bool Monster::GetDestroyed() {
+	return this->isDestroyed;
+}
+
+bool Monster::CollisionWithTarget() {
+	// collision 구현
+	return false;
+}
+
+float Monster::GetBoundRadius() {
+	return this->boundRadius;
 }

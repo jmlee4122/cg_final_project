@@ -41,3 +41,16 @@ bool IsValidIndex(int x, int z);
 float GetTerrainHeight(float x, float z);
 void Init();
 bool CheckCollision(float targetX, float targetZ, float footY);
+
+template<typename T>
+void RemoveDestroyed(std::vector<T*>& myVec) {
+    for (auto it = myVec.begin(); it != myVec.end();) {
+        if ((*it)->GetDestroyed()) {
+            delete* it;
+            it = myVec.erase(it);
+        }
+        else {
+            it++;
+        }
+    }
+}

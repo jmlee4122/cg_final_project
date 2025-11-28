@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <gl/glew.h>
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
@@ -31,6 +32,8 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	this->transMat = glm::mat4(1.0);
 
 	this->atk = attack;
+	this->isDestroyed = false;
+	this->boundRadius = 0.05;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -98,10 +101,21 @@ void Bullet::SetCenter() {
 }
 
 void Bullet::Update() {
-	// 순서가 중요
-	SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-	SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-	SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+	auto it = std::find(myMonsters.begin(), myMonsters.end(), this->target);
+	if (it != myMonsters.end()) {
+		if (CollisionWithTarget()) { // monster 와 충돌
+			this->target->TakeDamage(this->atk);
+			this->isDestroyed = true;
+		}
+		
+		// 순서가 중요
+		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
+		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+	}
+	else {
+		this->isDestroyed = true;
+	}
 }
 
 glm::vec3 Bullet::GetCenter() {
@@ -133,4 +147,21 @@ void Bullet::Draw(std::string camera) {
 	glBindVertexArray(0);
 }
 
-// ---- 충돌처리 필요 ----
+bool Bullet::GetDestroyed() {
+	return this->isDestroyed;
+}
+
+bool Bullet::CollisionWithTarget() {
+	// collision 구현
+	float tr = this->target->GetBoundRadius(); // tr : target bound radius
+	glm::vec3 tc = this->target->GetCenter(); // tc : target center
+	glm::vec3 c = this->center; // c : this object center
+	float distance =
+		(c.x - tc.x) * (c.x - tc.x) +
+		(c.y - tc.y) * (c.y - tc.y) +
+		(c.z - tc.z) * (c.z - tc.z);
+	if (distance <= (tr + this->boundRadius) * tr + this->boundRadius) {
+		return true;
+	}
+	return false;
+}
