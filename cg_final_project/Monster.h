@@ -23,6 +23,7 @@ public:
     bool GetDestroyed();
     bool CollisionWithTarget();
     float GetBoundRadius();
+    void ApplyKnockback();
 
 private:
     Model* model;
@@ -42,5 +43,8 @@ private:
     float hp;
     bool isDestroyed;
     float boundRadius;
+    bool isKnockbacking;
+    float maxKnockbackDis;
+    float currKnockbackDis;
 };
 

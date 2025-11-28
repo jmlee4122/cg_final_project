@@ -49,7 +49,7 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->rVelocity = this->currentSpeed / this->rRadians;
 
     this->yVelocity = 0.0f;
-    this->jumpForce = 15.0f;
+    this->jumpForce = 20.0f;
     this->gravity = -1.0f;
 
     this->barrelLen = 1.3f;
@@ -270,5 +270,5 @@ void Tank::TakeDamage(float attack) {
     else {
         this->hp -= attack;
     }
-    //std::cout << this->hp << " ";
+    std::cout << this->hp << " ";
 }

@@ -32,6 +32,9 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->hp = 20.0f;
 	this->isDestroyed = false;
 	this->boundRadius = 0.5f;
+	this->isKnockbacking = false;
+	this->maxKnockbackDis = 20.0f;
+	this->currKnockbackDis = 0.0f;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -102,11 +105,17 @@ void Monster::Update() {
 	if (CollisionWithTarget()) {
 		// 자신의 공격력으로 target 에게 피해를 입힘
 		this->target->TakeDamage(this->atk);
+		this->isKnockbacking = true;
 	}
-	// 순서가 중요
-	SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-	SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-	SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+	if (this->isKnockbacking) {
+		ApplyKnockback();
+	}
+	else {
+		// 순서가 중요
+		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
+		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+	}
 }
 
 glm::vec3 Monster::GetCenter() {
@@ -171,6 +180,7 @@ bool Monster::CollisionWithTarget() {
 		(nearestPoint.z - localCenter.z) * (nearestPoint.z - localCenter.z);
 
 	if (distance <= this->boundRadius * this->boundRadius) {
+
 		return true;
 	}
 	return false;
@@ -178,4 +188,21 @@ bool Monster::CollisionWithTarget() {
 
 float Monster::GetBoundRadius() {
 	return this->boundRadius;
+}
+
+void Monster::ApplyKnockback() {
+	float knockbackDis = 1.0f; // 넉백될 거리 per frame
+	// 뷰포인트는 몬스터 -> 탱크 방향이므로, 반대 방향은 -viewPoint
+	glm::vec3 knockbackDir = -this->viewPoint;
+	glm::vec3 knockbackVector = knockbackDir * knockbackDis;
+
+	// 넉백을 몬스터의 위치(center)와 모델 행렬(modelMat)에 즉시 적용
+	this->currKnockbackDis += knockbackDis;
+	this->center += knockbackVector;
+	this->modelMat = glm::translate(glm::mat4(1.0f), knockbackVector) * this->modelMat;
+
+	if (maxKnockbackDis <= this->currKnockbackDis) {
+		this->currKnockbackDis = 0.0f;
+		this->isKnockbacking = false;
+	}
 }
