@@ -15,6 +15,7 @@ public:
     void SetModelMat(glm::mat4 m);
     void DrawPart(std::string str);
     void SetChild(TankPart* child);
+    void ResetModelMat();
 
 private:
     Model* model;

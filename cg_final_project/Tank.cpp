@@ -95,6 +95,9 @@ void Tank::SetIsRight(bool value) { this->isRight = value; }
 void Tank::SetIsJumping(bool value) { this->isJumping = value; }
 
 void Tank::Update() {
+    if (this->center.y < -30.0f) {
+        Respawn();
+    }
     // find & update nearest monster
     this->nearest = NearestMonster();
 
@@ -331,4 +334,25 @@ void Tank::TakeDamage(float attack) {
         this->hp -= attack;
     }
     std::cout << this->hp << " ";
+}
+
+void Tank::Respawn() {
+    // update frontVec, center
+    this->center = glm::vec3(0, 0, 0);
+    this->frontVec = glm::vec3(0, 0, 1);
+    this->transMat = glm::mat4(1.0);
+    this->rotateMat = glm::mat4(1.0);
+    this->modelMat = glm::mat4(1.0);
+    this->viewRotateMat = glm::mat4(1.0);
+    this->viewPoint = this->frontVec;
+
+    this->currentSpeed = 0.0f;
+    this->yVelocity = 0.0f;
+    this->isJumping = false;
+    this->isOnGround = true;
+
+    this->bottom->ResetModelMat();
+    this->mid->ResetModelMat();
+    this->top->ResetModelMat();
+    this->barrel->ResetModelMat();
 }

@@ -78,6 +78,9 @@ void TankPart::SetModelMat(glm::mat4 m) { // recursion
 	if (this->pChild == nullptr) return;
 	this->pChild->SetModelMat(m);
 }
+void TankPart::ResetModelMat() {
+	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f));
+}
 
 void TankPart::DrawPart(std::string str) { // recursion
 	glUseProgram(shaderProgramID);

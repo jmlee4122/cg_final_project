@@ -42,6 +42,8 @@ public:
 	glm::vec3 GetBulletInitLoc();
 	void TakeDamage(float attack);
 
+	void Respawn();
+
 private:
 	bool isFront, isBack;
 	bool isLeft, isRight;
