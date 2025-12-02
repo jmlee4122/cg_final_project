@@ -62,6 +62,9 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->hp = 100.0f;
     this->isDestroyed = false;
 
+    this->width = gTankSize_width;
+    this->depth = gTankSize_depth;
+
     // setting camera (myExtern)
     myMainCamera = new CameraMain(this->center, this->frontVec);
     mySubCamera = new CameraSub(this->center, this->frontVec);
@@ -152,11 +155,11 @@ void Tank::SetTransMat() {
 
         float currentFootY = this->center.y;
         float nextX = this->center.x + transVec.x;
-        if (CheckCollision(nextX, this->center.z, currentFootY)) {
+        if (CheckCollision(nextX, this->center.z, currentFootY, this->width, this->depth)) {
             transVec.x = 0.0f; // 충돌 있으면 이동 적용 x
         }
         float nextZ = this->center.z + transVec.z;
-        if (CheckCollision(this->center.x, nextZ, currentFootY)) {
+        if (CheckCollision(this->center.x, nextZ, currentFootY, this->width, this->depth)) {
             transVec.z = 0.0f; // 충돌 있으면 이동 적용 x
         }
     }

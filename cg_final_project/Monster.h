@@ -14,6 +14,7 @@ public:
     ~Monster();
     void SetColor();
     void SetViewPoint();
+    void SetTransMat();
     void SetModelMat();
     void SetCenter();
     void Update();
@@ -39,12 +40,21 @@ private:
     glm::vec3 viewPoint;
     glm::vec3 center;
     float velocity;
+    float yVelocity;
+    float jumpForce;
+    float gravity;
     float atk;
     float hp;
     bool isDestroyed;
     float boundRadius;
     bool isKnockbacking;
+    bool isJumping;
+    bool isOnGround;
+    
     float maxKnockbackDis;
     float currKnockbackDis;
+
+    float width;
+    float depth;
 };
 

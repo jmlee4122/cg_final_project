@@ -594,16 +594,16 @@ void Init() {
 	//for (int i = 0; i < 256; i++) keyState[i] = false;
 }
 
-bool CheckCollision(float targetX, float targetZ, float footY) {
+bool CheckCollision(float targetX, float targetZ, float footY, float size_w, float size_d) {
 	// 충돌 박스 크기 (플레이어 크기의 절반보다 살짝 작게 설정하여 끼임 방지)
 	// playerSize가 0.8이므로 반경은 0.4지만, 0.3 정도로 여유를 둠
 
 	// 검사할 4개의 모서리 좌표
 	float corners[4][2] = {
-		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 위
-		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 오른쪽 위
-		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 아래
-		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }  // 오른쪽 아래
+		{ targetX - size_w / 2.0f * 0.8f, targetZ - size_d / 2.0f * 0.8f }, // 왼쪽 위
+		{ targetX + size_w / 2.0f * 0.8f, targetZ - size_d / 2.0f * 0.8f }, // 오른쪽 위
+		{ targetX - size_w / 2.0f * 0.8f, targetZ + size_d / 2.0f * 0.8f }, // 왼쪽 아래
+		{ targetX + size_w / 2.0f * 0.8f, targetZ + size_d / 2.0f * 0.8f }  // 오른쪽 아래
 	};
 
 	// 4개 모서리 중 하나라도 높은 벽에 닿으면 충돌로 간주

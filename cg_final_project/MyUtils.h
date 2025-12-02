@@ -40,7 +40,7 @@ void InitMap();
 bool IsValidIndex(int x, int z);
 float GetTerrainHeight(float x, float z);
 void Init();
-bool CheckCollision(float targetX, float targetZ, float footY);
+bool CheckCollision(float targetX, float targetZ, float footY, float size_w, float size_d);
 
 template<typename T>
 void RemoveDestroyed(std::vector<T*>& myVec) {

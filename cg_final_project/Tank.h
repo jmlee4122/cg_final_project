@@ -82,5 +82,8 @@ private:
 	float atk;
 	float hp;
 	bool isDestroyed;
+
+	float width;
+	float depth;
 };
 

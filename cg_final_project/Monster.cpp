@@ -22,6 +22,9 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->velocity = 10.0f;
+	this->yVelocity = 0.0f;
+	this->jumpForce = 20.0f;
+	this->gravity = -1.0f;
 	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
 	this->target = target;
@@ -33,8 +36,13 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->isDestroyed = false;
 	this->boundRadius = 0.5f;
 	this->isKnockbacking = false;
+	this->isJumping = false;
+	this->isOnGround = true;
 	this->maxKnockbackDis = 20.0f;
 	this->currKnockbackDis = 0.0f;
+
+	this->width = 1.0f;
+	this->depth = 1.0f;
 
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
@@ -91,11 +99,46 @@ void Monster::SetViewPoint() {
 	glm::vec3 targetCenter = this->target->GetCenter();
 	this->viewPoint = glm::normalize(targetCenter - this->center);
 }
+void Monster::SetTransMat() {
+	glm::vec3 transVec = glm::vec3(0, 0, 0);
+	glm::vec3 jumpVec = glm::vec3(0, 0, 0);
 
+	float currentFootY = this->center.y;
+
+	float nextX = this->center.x + this->velocity * this->viewPoint.x * gDeltaTime;
+	if (CheckCollision(nextX, this->center.z, currentFootY, this->width, this->depth)) {
+		this->isJumping = true;
+	}
+
+	float nextZ = this->center.z + this->velocity * this->viewPoint.z * gDeltaTime;
+	if (CheckCollision(this->center.x, nextZ, currentFootY, this->width, this->depth)) {
+		this->isJumping = true;
+	}
+	transVec = this->velocity * this->viewPoint * gDeltaTime;
+	transVec.y = 0.0f;
+
+	if (isJumping) {
+		if (isOnGround) {
+			this->isOnGround = false;
+			this->yVelocity = this->jumpForce;
+		}
+	}
+	this->yVelocity += this->gravity;
+	float nextY = this->center.y + (this->yVelocity * gDeltaTime);
+	if (nextY <= GetTerrainHeight(this->center.x, this->center.z)) {
+		nextY = GetTerrainHeight(this->center.x, this->center.z);
+		this->isOnGround = true;
+		this->isJumping = false;
+		this->yVelocity = 0.0f;
+	}
+	float deltaY = nextY - this->center.y;
+	jumpVec = glm::vec3(0, deltaY, 0);
+
+	glm::vec3 move = transVec + jumpVec;
+	this->transMat = glm::translate(glm::mat4(1.0), move);
+}
 void Monster::SetModelMat() {
-	// 다음 움직임을 적용하는 행렬 결정
-	glm::vec3 deltaMove = this->velocity * this->viewPoint * gDeltaTime;
-	this->transMat = glm::translate(glm::mat4(1.0), deltaMove);
+	// 다음 움직임을 적용하는 행렬 결정s
 	this->modelMat = this->transMat * this->modelMat;
 }
 
@@ -118,6 +161,7 @@ void Monster::Update() {
 	else {
 		// 순서가 중요
 		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+		SetTransMat();
 		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
 		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
 		SetColor();
