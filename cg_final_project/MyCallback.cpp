@@ -210,6 +210,8 @@ GLvoid Timer(int value) {
 	if (gAssembleActive && gAssembleTime) {
 		if (AllArrived()) {
 			gAssembleActive = false;
+			std::cout << "### All assembled ###" << std::endl;
+			std::cout << "basic monster count : " << myMonsters.size() << std::endl;
 		}
 	}
 	if (myTank) myTank->Update();

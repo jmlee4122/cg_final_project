@@ -264,8 +264,8 @@ void Monster::ApplyKnockback() {
 }
 
 bool Monster::IsAtOrigin() {
-	if (this->center.x == 0 && this->center.z == 0) {
-
+	if (this->center.x >= -0.2f && this->center.x < 0.2f &&
+		this->center.z >= -0.2f && this->center.z < 0.2f) {
 		return true;
 	}
 	return false;
