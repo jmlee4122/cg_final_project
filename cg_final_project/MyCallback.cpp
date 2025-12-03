@@ -208,10 +208,27 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 
 GLvoid Timer(int value) {
 	if (gAssembleActive && gAssembleTime) {
-		if (AllAssembled()) {
+		for (auto r : myMonsters) {
+			if (r->IsAtOrigin()) {
+				r->SetDestroyed(true);
+				gAssembleCount += 1;
+			}
+		}
+
+		// 처음으로 기본 몬스터가 원점에 도달한 경우
+		// boss 몬스터를 생성
+		//if (gAssembleCount == 1) {
+		//	CreateBoss(...);
+		//}
+		//// 이후 
+		//else if (gAssembleCount > 1) {
+		//	myBoss->IncreaseSize(gAssembleCount);
+		//}
+
+		if (myMonsters.empty()) {
 			gAssembleActive = false;
 			std::cout << "### All assembled ###" << std::endl;
-			std::cout << "basic monster count : " << myMonsters.size() << std::endl;
+			std::cout << "basic monster count : " << gAssembleCount << std::endl;
 		}
 	}
 	if (myTank) myTank->Update();

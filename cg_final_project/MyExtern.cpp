@@ -70,3 +70,4 @@ glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 bool gAssembleTime = false;
 bool gAssembleActive = false;
+int gAssembleCount = 0;

@@ -215,7 +215,9 @@ void Monster::TakeDamage(float attack) {
 		this->hp -= attack;
 	}
 }
-
+void Monster::SetDestroyed(bool a) {
+	this->isDestroyed = a;
+}
 bool Monster::GetDestroyed() {
 	return this->isDestroyed;
 }

@@ -21,6 +21,7 @@ public:
     glm::vec3 GetCenter();
     void Draw(std::string camera);
     void TakeDamage(float attack);
+    void SetDestroyed(bool a);
     bool GetDestroyed();
     bool CollisionWithTarget();
     float GetBoundRadius();
