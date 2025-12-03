@@ -95,9 +95,15 @@ void Monster::SetColor() {
 }
 
 void Monster::SetViewPoint() {
-	// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
-	glm::vec3 targetCenter = this->target->GetCenter();
-	this->viewPoint = glm::normalize(targetCenter - this->center);
+	if (gAssembleActive) {
+		glm::vec3 targetCenter = glm::vec3(0, 0, 0);
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
+	else {
+		// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
+		glm::vec3 targetCenter = this->target->GetCenter();
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
 }
 void Monster::SetTransMat() {
 	glm::vec3 transVec = glm::vec3(0, 0, 0);
@@ -255,4 +261,12 @@ void Monster::ApplyKnockback() {
 		this->currKnockbackDis = 0.0f;
 		this->isKnockbacking = false;
 	}
+}
+
+bool Monster::IsAtOrigin() {
+	if (this->center.x == 0 && this->center.z == 0) {
+
+		return true;
+	}
+	return false;
 }

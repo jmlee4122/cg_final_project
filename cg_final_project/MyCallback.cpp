@@ -23,12 +23,17 @@
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	if (currentFrame > 180.0f && !gAssembleTime && !gAssembleActive) {
+		gAssembleTime = true;
+		gAssembleActive = true;
+	}
 	gDeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
 	// 1. 시간 흐름 계산 (3분 = 180초)
 	float maxTime = 180.0f;
 	float ratio = currentFrame / maxTime;
+
 	if (ratio > 1.0f) ratio = 1.0f;
 
 	// 2. 조명 색상 (지형용)
@@ -202,6 +207,11 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 }
 
 GLvoid Timer(int value) {
+	if (gAssembleActive && gAssembleTime) {
+		if (AllArrived()) {
+			gAssembleActive = false;
+		}
+	}
 	if (myTank) myTank->Update();
 	if (!myBullets.empty()) {
 		for (auto r : myBullets) {

@@ -83,3 +83,6 @@ extern GLuint cubeVAO, cubeVBO, skyboxVAO, skyboxVBO;
 // Α¶Έν
 extern glm::vec3 lightPos;
 extern glm::vec3 lightColor;
+
+extern bool gAssembleTime;
+extern bool gAssembleActive;

@@ -7,11 +7,11 @@
 struct Model;
 class Tank;
 
-class Monster
+class Boss
 {
 public:
-    Monster(Model* model, Tank* target, glm::vec3 initLoc); // 생성될 때 탱크 포인터를 받는다.
-    ~Monster();
+    Boss(Model* model, Tank* target, int count); // 생성될 때 탱크 포인터를 받는다.
+    ~Boss();
     void SetColor();
     void SetViewPoint();
     void SetTransMat();
@@ -25,7 +25,6 @@ public:
     bool CollisionWithTarget();
     float GetBoundRadius();
     void ApplyKnockback();
-    bool IsAtOrigin();
 
 private:
     Model* model;
@@ -40,22 +39,10 @@ private:
     Tank* target;
     glm::vec3 viewPoint;
     glm::vec3 center;
-    float velocity;
-    float yVelocity;
-    float jumpForce;
-    float gravity;
-    float atk;
-    float hp;
+    float velocity, yVelocity;
+    float jumpForce, gravity;
+    float atk_basic, atk_jump, hp;
+    float size;
     bool isDestroyed;
-    float boundRadius;
-    bool isKnockbacking;
-    bool isJumping;
-    bool isOnGround;
-    
-    float maxKnockbackDis;
-    float currKnockbackDis;
-
-    float width;
-    float depth;
 };
 

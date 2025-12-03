@@ -67,3 +67,6 @@ GLuint cubeVAO, cubeVBO, skyboxVAO, skyboxVBO;
 // Α¶Έν
 glm::vec3 lightPos = glm::vec3(500.0f, 500.0f, 500.0f);
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+bool gAssembleTime = false;
+bool gAssembleActive = false;
