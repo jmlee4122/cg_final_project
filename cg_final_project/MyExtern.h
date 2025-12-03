@@ -11,6 +11,7 @@ class Bullet;
 class Monster;
 class Plane;
 class Tank;
+class Boss;
 class CameraMain;
 class CameraSub;
 
@@ -34,6 +35,7 @@ extern Plane* myPlane;
 extern Tank* myTank;
 extern std::vector<Monster*> myMonsters;
 extern std::vector<Bullet*> myBullets;
+extern Boss* myBoss;
 extern CameraMain* myMainCamera;
 extern CameraSub* mySubCamera;
 

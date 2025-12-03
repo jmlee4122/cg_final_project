@@ -20,10 +20,11 @@
 #include "Plane.h"
 #include "Bullet.h"
 #include "Monster.h"
+#include "Boss.h"
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	if (currentFrame > 180.0f && !gAssembleTime && !gAssembleActive) {
+	if (currentFrame > 10.0f && !gAssembleTime && !gAssembleActive) {
 		gAssembleTime = true;
 		gAssembleActive = true;
 	}
@@ -112,6 +113,9 @@ GLvoid DrawScene() {
 		for (auto r : myMonsters) {
 			r->Draw("main");
 		}
+	}
+	if (myBoss) {
+		myBoss->Draw("main");
 	}
 
 	// 2. 스카이박스 렌더링
@@ -212,18 +216,17 @@ GLvoid Timer(int value) {
 			if (r->IsAtOrigin()) {
 				r->SetDestroyed(true);
 				gAssembleCount += 1;
+				// 처음으로 기본 몬스터가 원점에 도달한 경우
+				// boss 몬스터를 생성
+				if (gAssembleCount == 1) {
+					CreateBoss();
+				}
 			}
 		}
 
-		// 처음으로 기본 몬스터가 원점에 도달한 경우
-		// boss 몬스터를 생성
-		//if (gAssembleCount == 1) {
-		//	CreateBoss(...);
-		//}
-		//// 이후 
-		//else if (gAssembleCount > 1) {
-		//	myBoss->IncreaseSize(gAssembleCount);
-		//}
+		if (gAssembleCount > 1) {
+			myBoss->IncreaseSize(gAssembleCount);
+		}
 
 		if (myMonsters.empty()) {
 			gAssembleActive = false;
@@ -244,7 +247,8 @@ GLvoid Timer(int value) {
 		}
 		RemoveDestroyed(myMonsters);
 	}
-	
+	if (myBoss) myBoss->Update();
+
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 	glutPostRedisplay();

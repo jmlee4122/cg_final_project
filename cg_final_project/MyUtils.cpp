@@ -21,6 +21,7 @@
 #include "Tank.h"
 #include "Plane.h"
 #include "Monster.h"
+#include "Boss.h"
 
 void read_newline(char* str) {
 	char* pos;
@@ -331,7 +332,16 @@ void CreateMonster(glm::vec3 initLoc) {
 	read_obj_file("monster.obj", monsterModel);
 	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc));
 }
-
+void CreateBoss() {
+	if (myTank == nullptr) {
+		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
+		return;
+	}
+	std::cout << "Boss Created" << std::endl;
+	Model* bossModel = new Model;
+	read_obj_file("monster.obj", bossModel);
+	myBoss = new Boss(bossModel, myTank, glm::vec3(0, GetTerrainHeight(0, 0), 0));
+}
 
 
 // --- 유틸리티 함수들 ---

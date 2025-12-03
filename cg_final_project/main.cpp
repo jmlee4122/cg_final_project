@@ -38,6 +38,11 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	//test
 	CreateMonster(glm::vec3(30, 0, 70));
 	CreateMonster(glm::vec3(50, 0, 0));
+	CreateMonster(glm::vec3(100, 0, 40));
+	CreateMonster(glm::vec3(200, 0, 40));
+	CreateMonster(glm::vec3(300, 0, 40));
+	CreateMonster(glm::vec3(0, 0, 400));
+	CreateMonster(glm::vec3(150, 0, 200));
 	CreateMonster(glm::vec3(0, 0, 40));
 
 	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함

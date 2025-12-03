@@ -10,10 +10,11 @@ class Tank;
 class Boss
 {
 public:
-    Boss(Model* model, Tank* target, int count); // 생성될 때 탱크 포인터를 받는다.
+    Boss(Model* model, Tank* target, glm::vec3 initLoc); // 생성될 때 탱크 포인터를 받는다.
     ~Boss();
     void SetColor();
     void SetViewPoint();
+    void SetScaleMat();
     void SetTransMat();
     void SetModelMat();
     void SetCenter();
@@ -24,7 +25,7 @@ public:
     bool GetDestroyed();
     bool CollisionWithTarget();
     float GetBoundRadius();
-    void ApplyKnockback();
+    void IncreaseSize(int cnt);
 
 private:
     Model* model;
@@ -34,6 +35,7 @@ private:
     GLuint uModelLoc, uViewLoc, uProjLoc;
     GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc;
     glm::vec3 uColor;
+    glm::mat4 scaleMat;
     glm::mat4 modelMat;
     glm::mat4 transMat;
     Tank* target;

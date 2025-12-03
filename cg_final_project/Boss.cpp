@@ -14,7 +14,7 @@
 #include "Boss.h"
 #include "Tank.h"
 
-Boss::Boss(Model* model, Tank* target, int count) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
+Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -24,12 +24,13 @@ Boss::Boss(Model* model, Tank* target, int count) : VAO(0), VBO_pos(0), VBO_nol(
 	this->yVelocity = 0.0f;
 	this->jumpForce = 50.0f;
 	this->gravity = -1.0f;
-	this->center = glm::vec3(0, 0, 0);
+	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
 	this->target = target;
-	this->size = 20.0f;
-	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 10 * count;
-	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(this->size, this->size, this->size));
+	this->size = 0.0f;
+	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 100.0f;
+	this->scaleMat = glm::mat4(1.0);
+	this->modelMat = glm::mat4(1.0);
 	this->transMat = glm::mat4(1.0);
 	this->isDestroyed = false;
 
@@ -73,14 +74,56 @@ Boss::~Boss() {
 	}
 }
 
+void Boss::Draw(std::string camera) {
+	glUseProgram(shaderProgramID);
+	glBindVertexArray(VAO);
+
+	//glUniform3f(uLightPosLoc, 0.0, 200.0, 100.0);
+	//glUniform3f(uLightColorLoc, 1.0, 1.0, 1.0);
+	glUniform3f(uLightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+	glUniform3f(uLightColorLoc, lightColor.x, lightColor.y, lightColor.z);
+
+	glUniformMatrix4fv(uModelLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
+	glUniformMatrix4fv(uViewLoc, 1, GL_FALSE, glm::value_ptr(gViewMat));
+	glUniformMatrix4fv(uProjLoc, 1, GL_FALSE, glm::value_ptr(gProjMat));
+
+	glm::vec3 cameraPos = glm::vec3(0, 0, 0);
+	if (camera == "main")
+		cameraPos = myMainCamera->GetEye();
+	else if (camera == "sub")
+		cameraPos = mySubCamera->GetEye();
+
+	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
+	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));
+	glDrawElements(GL_TRIANGLES, fCount * 3, GL_UNSIGNED_INT, (void*)(0));
+	glBindVertexArray(0);
+
+	//std::cout << "Monster x : " << this->center.x << "//";
+	//std::cout << "Monster x : " << this->center.z << "//" << std::endl;
+}
+
+void Boss::IncreaseSize(int cnt) {
+	this->size = cnt;
+	this->hp = this->size * 100.0f;
+}
+
 void Boss::SetColor() {
-	this->uColor = glm::vec3(1.0f / this->hp, 0.0f, 1.0f / this->hp);
+	this->uColor.r = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);
+	this->uColor.g = 0.0f;
+	this->uColor.b = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);
 }
 
 void Boss::SetViewPoint() {
 	// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
 	glm::vec3 targetCenter = this->target->GetCenter();
 	this->viewPoint = glm::normalize(targetCenter - this->center);
+}
+
+void Boss::SetScaleMat() {
+	this->scaleMat = glm::scale(
+		glm::mat4(1.0), 
+		glm::vec3(this->size, this->size, this->size)
+	);
 }
 
 void Boss::SetTransMat() {
@@ -91,7 +134,13 @@ void Boss::SetTransMat() {
 }
 
 void Boss::SetModelMat() {
-
+	if (gAssembleActive) {
+		this->modelMat = 
+			glm::translate(glm::mat4(1.0), this->center) * this->scaleMat;
+	}
+	else {
+		this->modelMat = this->transMat * this->modelMat;
+	}
 }
 
 void Boss::SetCenter() {
@@ -99,5 +148,7 @@ void Boss::SetCenter() {
 }
 
 void Boss::Update() {
-
+	SetColor();
+	SetScaleMat();
+	SetModelMat();
 }

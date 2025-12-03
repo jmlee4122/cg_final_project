@@ -26,7 +26,7 @@ void SetProjMatSub(); // set projection matrix for mini map
 void CreatePlane();
 void CreateTank();
 void CreateMonster(glm::vec3 initLoc);
-
+void CreateBoss();
 
 
 
