@@ -617,7 +617,7 @@ bool CheckCollision(float targetX, float targetZ, float footY, float size_w, flo
 	return false; // ¾ÈÀüÇÔ
 }
 
-bool AllArrived() {
+bool AllAssembled() {
 	for (auto r : myMonsters) {
 		if (!r->IsAtOrigin()) return false;
 	}

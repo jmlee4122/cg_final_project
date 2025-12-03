@@ -208,7 +208,7 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 
 GLvoid Timer(int value) {
 	if (gAssembleActive && gAssembleTime) {
-		if (AllArrived()) {
+		if (AllAssembled()) {
 			gAssembleActive = false;
 			std::cout << "### All assembled ###" << std::endl;
 			std::cout << "basic monster count : " << myMonsters.size() << std::endl;

@@ -55,4 +55,4 @@ void RemoveDestroyed(std::vector<T*>& myVec) {
     }
 }
 
-bool AllArrived();
+bool AllAssembled();
