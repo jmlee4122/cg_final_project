@@ -16,6 +16,7 @@ public:
     void SetColor();
     void SetViewPoint();
     void SetTransMat();
+    void SetRotateMat();
     void SetModelMat();
     void SetCenter();
     void Update();
@@ -39,9 +40,12 @@ private:
     glm::vec3 uColor;
     glm::mat4 modelMat;
     glm::mat4 transMat;
+    glm::mat4 rotateMat;
     Tank* target;
     glm::vec3 viewPoint;
+    glm::vec3 frontVec;
     glm::vec3 center;
+    float rotateSpeed;
     float velocity;
     float yVelocity;
     float jumpForce;

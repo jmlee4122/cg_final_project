@@ -21,15 +21,18 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
+	this->rotateSpeed = 8.0f;
 	this->velocity = 10.0f;
 	this->yVelocity = 0.0f;
 	this->jumpForce = 20.0f;
 	this->gravity = -1.0f;
 	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
+	this->frontVec = glm::vec3(0, 0, 1);
 	this->target = target;
 	this->modelMat = glm::translate(glm::mat4(1.0), this->center);
 	this->transMat = glm::mat4(1.0);
+	this->rotateMat = glm::mat4(1.0);
 
 	this->atk = 5.0f;
 	this->hp = 20.0f;
@@ -146,9 +149,48 @@ void Monster::SetTransMat() {
 	glm::vec3 move = transVec + jumpVec;
 	this->transMat = glm::translate(glm::mat4(1.0), move);
 }
+void Monster::SetRotateMat() {
+	if (!gAssembleActive) {
+		// y축 회전만 고려
+		glm::vec3 normFront = glm::normalize(glm::vec3(this->frontVec.x, 0.0f, this->frontVec.z));
+		glm::vec3 normView = glm::normalize(glm::vec3(this->viewPoint.x, 0.0f, this->viewPoint.z));
+
+		// 사이각 계산
+		float cosTheta = glm::dot(normFront, normView);
+		float degree = acos(glm::clamp(cosTheta, -1.0f, 1.0f));
+
+		// 회전 방향 결정 (+: 왼쪽, -: 오른쪽)
+		float dirSign = glm::cross(normFront, normView).y;
+
+		// 회전할 각도가 매우 작으면 회전하지 않음 (떨림 방지)
+		if (glm::abs(degree) < 0.01f) {
+			this->rotateMat = glm::mat4(1.0);
+			return;
+		}
+		float rotateRadian = 0.0f;
+		// 프레임당 회전 각도 계산
+		if (dirSign > 0.0f) {
+			rotateRadian = degree * this->rotateSpeed;
+		}
+		else {
+			rotateRadian = -degree * this->rotateSpeed;
+		}
+
+		glm::mat4 t1 = glm::translate(glm::mat4(1.0), -this->center);
+		glm::mat4 r = glm::rotate(
+			glm::mat4(1.0), glm::radians(rotateRadian), glm::vec3(0, 1, 0));
+		glm::mat4 t2 = glm::translate(glm::mat4(1.0), this->center);
+		this->rotateMat = t2 * r * t1;
+
+		this->frontVec = glm::vec3(this->rotateMat * glm::vec4(this->frontVec, 0.0f));
+	}
+	else {
+		this->rotateMat = glm::mat4(1.0);
+	}
+}
 void Monster::SetModelMat() {
 	// 다음 움직임을 적용하는 행렬 결정s
-	this->modelMat = this->transMat * this->modelMat;
+	this->modelMat = this->transMat * this->rotateMat * this->modelMat;
 }
 
 void Monster::SetCenter() {
@@ -171,6 +213,7 @@ void Monster::Update() {
 		// 순서가 중요
 		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
 		SetTransMat();
+		SetRotateMat();
 		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
 		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
 		SetColor();
