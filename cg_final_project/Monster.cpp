@@ -29,8 +29,8 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 		float timeToFall = sqrt(2.0f * initLoc.y / -this->gravity);
 
 		if (timeToFall > 0) {
-			this->xThrowForce = this->xThrowDis * timeToFall;
-			this->zThrowForce = this->zThrowDis * timeToFall;
+			this->xThrowForce = this->xThrowDis / timeToFall;
+			this->zThrowForce = this->zThrowDis / timeToFall;
 		}
 	}
 	this->model = model;
@@ -333,11 +333,11 @@ void Monster::ApplyKnockback() {
 }
 
 void Monster::ApplyThrowing() {
-	this->yVelocity += this->gravity;
+	this->yVelocity += this->gravity * gDeltaTime * 10.0f;
 	glm::vec3 nextPos = glm::vec3(
-		this->center.x + this->xThrowForce * gDeltaTime,
-		this->center.y + this->yVelocity * gDeltaTime,
-		this->center.z + this->zThrowForce * gDeltaTime);
+		this->center.x + this->xThrowForce * gDeltaTime * 10.0f,
+		this->center.y + this->yVelocity * gDeltaTime * 10.0f,
+		this->center.z + this->zThrowForce * gDeltaTime * 10.0f);
 	
 	if (nextPos.y <= GetTerrainHeight(nextPos.x, nextPos.z)) {
 		nextPos.y = GetTerrainHeight(nextPos.x, nextPos.z);
