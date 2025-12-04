@@ -25,6 +25,7 @@ public:
     void TakeDamage(float attack);
     bool GetDestroyed();
     bool CollisionWithTarget();
+    void ApplyKnockback();
     float GetBoundRadius();
     void IncreaseSize(int cnt);
     glm::mat4 GetModelMat();
@@ -45,14 +46,18 @@ private:
     glm::vec3 viewPoint;
     glm::vec3 frontVec;
     glm::vec3 center;
-    glm::vec3 cornerPoint[8];
     float rotateSpeed;
     float velocity, yVelocity;
     float jumpForce, gravity;
     float atk_basic, atk_jump, hp;
     float size;
+    float boundRadius;
     bool isDestroyed;
     bool isJumping;
     bool isOnGround;
+    bool isKnockbacking;
+    float maxKnockbackDis;
+    float currKnockbackDis;
+
 };
 

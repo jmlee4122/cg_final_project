@@ -29,6 +29,7 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->frontVec = glm::vec3(0, 0, 1);
 	this->target = target;
 	this->size = 0.0f;
+	this->boundRadius = 0.0f;
 	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 100.0f;
 	this->scaleMat = glm::mat4(1.0);
 	this->modelMat = glm::mat4(1.0);
@@ -38,6 +39,9 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->isDestroyed = false;
 	this->isJumping = false;
 	this->isOnGround = true;
+	this->isKnockbacking = false;
+	this->maxKnockbackDis = 0.0f;
+	this->currKnockbackDis = 0.0f;
 
 
 	if (model->normals == nullptr) {
@@ -114,6 +118,8 @@ void Boss::IncreaseSize(int cnt) {
 	this->size = (float)cnt;
 	this->hp = this->size * 100.0f;
 	this->gravity = -this->size * 0.1f;
+	this->boundRadius = this->size * 0.5f;
+	this->maxKnockbackDis = this->size * 5.0f;
 }
 
 void Boss::SetColor() {
@@ -235,20 +241,17 @@ void Boss::SetCenter() {
 	glm::vec4 vector = glm::vec4(this->center, 1);
 	vector = this->transMat * this->rotateMat * vector;
 	this->center = glm::vec3(vector);
-
-	float cx = this->center.x, cy = this->center.y, cz = this->center.z;
-	float halfSize = this->size / 2;
-	cornerPoint[0] = glm::vec3(cx - halfSize, cy, cz + halfSize); // 앞-왼쪽-아래
-	cornerPoint[1] = glm::vec3(cx + halfSize, cy, cz + halfSize); // 앞-오른쪽-아래
-	cornerPoint[2] = glm::vec3(cx + halfSize, cy + this->size, cz + halfSize); // 앞-오른쪽-위
-	cornerPoint[3] = glm::vec3(cx - halfSize, cy + this->size, cz + halfSize); // 앞-왼쪽-위
-	cornerPoint[4] = glm::vec3(cx - halfSize, cy, cz - halfSize); // 뒤-왼쪽-아래
-	cornerPoint[5] = glm::vec3(cx + halfSize, cy, cz - halfSize); // 뒤-오른쪽-아래
-	cornerPoint[6] = glm::vec3(cx + halfSize, cy + this->size, cz - halfSize); // 뒤-오른쪽-위
-	cornerPoint[7] = glm::vec3(cx - halfSize, cy + this->size, cz - halfSize); // 뒤-왼쪽-위
 }
 
 void Boss::Update() {
+	if (CollisionWithTarget()) {
+		// 자신의 공격력으로 target 에게 피해를 입힘
+		this->target->TakeDamage(this->atk_basic);
+		this->isKnockbacking = true;
+	}
+	if (this->isKnockbacking) {
+		ApplyKnockback();
+	}
 	SetColor();
 	SetScaleMat();
 	SetViewPoint();
@@ -275,4 +278,43 @@ void Boss::TakeDamage(float attack) {
 
 glm::vec3 Boss::GetCenter() {
 	return this->center;
+}
+
+bool Boss::CollisionWithTarget() {
+	glm::mat4 targetModelMat = this->target->GetModelMat();
+	glm::mat4 inverseMat = glm::inverse(targetModelMat);
+	glm::vec4 vec = inverseMat * glm::vec4(this->center, 1);
+	glm::vec3 localCenter = glm::vec3(vec);
+	glm::vec3 nearestPoint = glm::vec3(0, 0, 0);
+	nearestPoint.x = glm::clamp(localCenter.x, -gTankSize_width / 2.0f, gTankSize_width / 2.0f);
+	nearestPoint.y = glm::clamp(localCenter.y, -gTankSize_height / 2.0f, gTankSize_height / 2.0f);
+	nearestPoint.z = glm::clamp(localCenter.z, -gTankSize_depth / 2.0f, gTankSize_depth / 2.0f);
+
+	float distance =
+		(nearestPoint.x - localCenter.x) * (nearestPoint.x - localCenter.x) +
+		(nearestPoint.y - localCenter.y) * (nearestPoint.y - localCenter.y) +
+		(nearestPoint.z - localCenter.z) * (nearestPoint.z - localCenter.z);
+
+	if (distance <= this->boundRadius * this->boundRadius) {
+
+		return true;
+	}
+	return false;
+}
+
+void Boss::ApplyKnockback() {
+	float knockbackDis = 1.0f; // 넉백될 거리 per frame
+	// 뷰포인트는 몬스터 -> 탱크 방향이므로, 반대 방향은 -viewPoint
+	glm::vec3 knockbackDir = -this->viewPoint;
+	glm::vec3 knockbackVector = knockbackDir * knockbackDis;
+
+	// 넉백을 몬스터의 위치(center)와 모델 행렬(modelMat)에 즉시 적용
+	this->currKnockbackDis += knockbackDis;
+	this->center += knockbackVector;
+	this->modelMat = glm::translate(glm::mat4(1.0f), knockbackVector) * this->modelMat;
+
+	if (maxKnockbackDis <= this->currKnockbackDis) {
+		this->currKnockbackDis = 0.0f;
+		this->isKnockbacking = false;
+	}
 }
