@@ -16,6 +16,19 @@
 
 Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
+	this->gravity = -1.0f;
+	if (!gAssembleTime) {
+		this->isThrown = false;
+		this->thrownTarget = glm::vec3(myTank->GetCenter());
+		this->xThrowDis = this->thrownTarget.x - initLoc.x;
+		this->zThrowDis = this->thrownTarget.z - initLoc.z;
+		this->xThrowForce = xThrowDis * this->gravity / initLoc.y;
+		this->zThrowForce = zThrowDis * this->gravity / initLoc.y;
+	}
+	else {
+		this->isThrown = true;
+		this->thrownTarget = glm::vec3(0, 0, 0);
+	}
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -25,7 +38,6 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->velocity = 10.0f;
 	this->yVelocity = 0.0f;
 	this->jumpForce = 20.0f;
-	this->gravity = -1.0f;
 	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
 	this->frontVec = glm::vec3(0, 0, 1);
@@ -201,22 +213,27 @@ void Monster::SetCenter() {
 }
 
 void Monster::Update() {
-	if (CollisionWithTarget()) {
-		// 자신의 공격력으로 target 에게 피해를 입힘
-		this->target->TakeDamage(this->atk);
-		this->isKnockbacking = true;
-	}
-	if (this->isKnockbacking) {
-		ApplyKnockback();
+	if (this->isThrown) {
+		ApplyThrowing();
 	}
 	else {
-		// 순서가 중요
-		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-		SetTransMat();
-		SetRotateMat();
-		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
-		SetColor();
+		if (CollisionWithTarget()) {
+			// 자신의 공격력으로 target 에게 피해를 입힘
+			this->target->TakeDamage(this->atk);
+			this->isKnockbacking = true;
+		}
+		if (this->isKnockbacking) {
+			ApplyKnockback();
+		}
+		else {
+			// 순서가 중요
+			SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+			SetTransMat();
+			SetRotateMat();
+			SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
+			SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+			SetColor();
+		}
 	}
 }
 
@@ -308,6 +325,24 @@ void Monster::ApplyKnockback() {
 	if (maxKnockbackDis <= this->currKnockbackDis) {
 		this->currKnockbackDis = 0.0f;
 		this->isKnockbacking = false;
+	}
+}
+
+void Monster::ApplyThrowing() {
+	glm::vec3 nextPos = glm::vec3(
+		this->center.x + this->xThrowForce,
+		this->center.y + this->gravity,
+		this->center.z + this->zThrowForce);
+	if (nextPos.y <= GetTerrainHeight(nextPos.x, nextPos.z)) {
+		nextPos.y = GetTerrainHeight(nextPos.x, nextPos.z);
+		this->center = nextPos;
+		this->modelMat = glm::translate(glm::mat4(1.0), this->center);
+
+		this->isThrown = false;
+	}
+	else {
+		this->center = nextPos;
+		this->modelMat = glm::translate(glm::mat4(1.0), this->center);
 	}
 }
 

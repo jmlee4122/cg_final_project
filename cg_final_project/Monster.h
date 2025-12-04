@@ -28,6 +28,7 @@ public:
     bool CollisionWithTarget();
     float GetBoundRadius();
     void ApplyKnockback();
+    void ApplyThrowing();
     bool IsAtOrigin();
 
 private:
@@ -38,13 +39,9 @@ private:
     GLuint uModelLoc, uViewLoc, uProjLoc;
     GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc;
     glm::vec3 uColor;
-    glm::mat4 modelMat;
-    glm::mat4 transMat;
-    glm::mat4 rotateMat;
+    glm::mat4 modelMat, transMat, rotateMat;
     Tank* target;
-    glm::vec3 viewPoint;
-    glm::vec3 frontVec;
-    glm::vec3 center;
+    glm::vec3 viewPoint, frontVec, center;
     float rotateSpeed;
     float velocity;
     float yVelocity;
@@ -54,14 +51,16 @@ private:
     float hp;
     bool isDestroyed;
     float boundRadius;
-    bool isKnockbacking;
-    bool isJumping;
-    bool isOnGround;
+    bool isKnockbacking, isJumping, isOnGround, isThrown;
     
     float maxKnockbackDis;
     float currKnockbackDis;
 
     float width;
     float depth;
+
+    glm::vec3 thrownTarget;
+    float xThrowDis, zThrowDis;
+    float xThrowForce, zThrowForce;
 };
 

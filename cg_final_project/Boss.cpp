@@ -330,5 +330,11 @@ void Boss::ApplyKnockback() {
 }
 
 void Boss::ThrowAttack() {
-	std::cout << this->lastThrowAttackTime << std::endl;
+	//std::cout << this->lastThrowAttackTime << std::endl;
+	glm::vec3 thrownLoc = glm::vec3(0, 0, 0);
+	thrownLoc.x = this->center.x;
+	thrownLoc.y = this->center.y + this->size / 2.0f;
+	thrownLoc.z = this->center.z;
+
+	CreateMonster(thrownLoc);
 }
