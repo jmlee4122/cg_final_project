@@ -114,9 +114,15 @@ void Boss::SetColor() {
 }
 
 void Boss::SetViewPoint() {
-	// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
-	glm::vec3 targetCenter = this->target->GetCenter();
-	this->viewPoint = glm::normalize(targetCenter - this->center);
+	if (gAssembleActive) {
+		glm::vec3 targetCenter = glm::vec3(0, 0, 0);
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
+	else {
+		// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
+		glm::vec3 targetCenter = this->target->GetCenter();
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
 }
 
 void Boss::SetScaleMat() {
@@ -131,6 +137,7 @@ void Boss::SetTransMat() {
 	glm::vec3 jumpVec = glm::vec3(0, 0, 0);
 	transVec = this->velocity * this->viewPoint * gDeltaTime;
 	transVec.y = 0.0f;
+	this->transMat = glm::translate(glm::mat4(1.0), transVec);
 }
 
 void Boss::SetModelMat() {
@@ -144,11 +151,16 @@ void Boss::SetModelMat() {
 }
 
 void Boss::SetCenter() {
-
+	glm::vec4 vector = glm::vec4(this->center, 1);
+	vector = this->transMat * vector;
+	this->center = glm::vec3(vector);
 }
 
 void Boss::Update() {
 	SetColor();
 	SetScaleMat();
+	SetViewPoint();
+	SetTransMat();
 	SetModelMat();
+	SetCenter();
 }
