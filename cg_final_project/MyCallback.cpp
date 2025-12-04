@@ -27,6 +27,9 @@ GLvoid DrawScene() {
 	if (currentFrame > 10.0f && !gAssembleTime && !gAssembleActive) {
 		gAssembleTime = true;
 		gAssembleActive = true;
+		for (auto r : myMonsters) {
+			r->SpeedUp();
+		}
 	}
 	gDeltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;

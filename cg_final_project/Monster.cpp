@@ -94,6 +94,9 @@ void Monster::SetColor() {
 	}
 }
 
+void Monster::SpeedUp() {
+	this->velocity = 10.0f * this->velocity;
+}
 void Monster::SetViewPoint() {
 	if (gAssembleActive) {
 		glm::vec3 targetCenter = glm::vec3(0, 0, 0);

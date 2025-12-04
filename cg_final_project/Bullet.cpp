@@ -29,7 +29,7 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	this->center = loc;
 	this->viewPoint = glm::vec3(0, 0, 0);
 	this->target = target;
-	this->modelMat = glm::translate(glm::mat4(1.0), this->center);
+	this->modelMat = glm::translate(glm::mat4(1.0), this->center) * glm::scale(glm::mat4(1.0), glm::vec3(5, 5, 5));
 	this->transMat = glm::mat4(1.0);
 
 	this->atk = attack;
