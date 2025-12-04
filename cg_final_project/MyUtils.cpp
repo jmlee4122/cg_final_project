@@ -337,10 +337,9 @@ void CreateBoss() {
 		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
 		return;
 	}
-	std::cout << "Boss Created" << std::endl;
 	Model* bossModel = new Model;
-	read_obj_file("monster.obj", bossModel);
-	myBoss = new Boss(bossModel, myTank, glm::vec3(0, GetTerrainHeight(0, 0), 0));
+	read_obj_file("boss.obj", bossModel);
+	myBoss = new Boss(bossModel, myTank, glm::vec3(0, 0, 0));
 }
 
 

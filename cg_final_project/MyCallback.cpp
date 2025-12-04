@@ -178,6 +178,9 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	case ' ':
 		if (myTank) myTank->SetIsJumping(true);
 		break;
+	case 't':
+		CreateMonster(glm::vec3(0, 0, 40));
+		break;
 	case 'q':
 		glutLeaveMainLoop();
 		break;
@@ -211,6 +214,21 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 }
 
 GLvoid Timer(int value) {
+	if (myTank) myTank->Update();
+	if (!myBullets.empty()) {
+		for (auto r : myBullets) {
+			r->Update();
+		}
+	}
+	if (!myMonsters.empty()) {
+		for (auto r : myMonsters) {
+			r->Update();
+		}
+	}
+	if (myBoss) myBoss->Update();
+	if (myMainCamera) myMainCamera->UpdateVectors();
+	if (mySubCamera) mySubCamera->UpdateVectors();
+
 	if (gAssembleActive && gAssembleTime) {
 		for (auto r : myMonsters) {
 			if (r->IsAtOrigin()) {
@@ -218,39 +236,26 @@ GLvoid Timer(int value) {
 				gAssembleCount += 1;
 				// 처음으로 기본 몬스터가 원점에 도달한 경우
 				// boss 몬스터를 생성
-				if (gAssembleCount == 1) {
+				if (gAssembleCount == 1 && myBoss == nullptr) {
 					CreateBoss();
 				}
 			}
 		}
 
-		if (gAssembleCount > 1) {
+		if (gAssembleCount >= 1 && myBoss != nullptr) {
 			myBoss->IncreaseSize(gAssembleCount);
 		}
 
 		if (myMonsters.empty()) {
 			gAssembleActive = false;
-			std::cout << "### All assembled ###" << std::endl;
+			// std::cout << "### All assembled ###" << std::endl;
 			std::cout << "basic monster count : " << gAssembleCount << std::endl;
 		}
 	}
-	if (myTank) myTank->Update();
-	if (!myBullets.empty()) {
-		for (auto r : myBullets) {
-			r->Update();
-		}
-		RemoveDestroyed(myBullets);
-	}
-	if (!myMonsters.empty()) {
-		for (auto r : myMonsters) {
-			r->Update();
-		}
-		RemoveDestroyed(myMonsters);
-	}
-	if (myBoss) myBoss->Update();
+	
+	RemoveDestroyed(myBullets);
+	RemoveDestroyed(myMonsters);
 
-	if (myMainCamera) myMainCamera->UpdateVectors();
-	if (mySubCamera) mySubCamera->UpdateVectors();
 	glutPostRedisplay();
 	glutTimerFunc(16, Timer, 0);
 }

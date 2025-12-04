@@ -22,8 +22,8 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->velocity = 5.0f;
 	this->yVelocity = 0.0f;
-	this->jumpForce = 50.0f;
-	this->gravity = -1.0f;
+	this->jumpForce = 20.0f;
+	this->gravity = 0.0f;
 	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
 	this->target = target;
@@ -33,6 +33,8 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->modelMat = glm::mat4(1.0);
 	this->transMat = glm::mat4(1.0);
 	this->isDestroyed = false;
+	this->isJumping = false;
+	this->isOnGround = true;
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -58,6 +60,8 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+	
+	std::cout << "boss created" << std::endl;
 }
 
 Boss::~Boss() {
@@ -103,8 +107,9 @@ void Boss::Draw(std::string camera) {
 }
 
 void Boss::IncreaseSize(int cnt) {
-	this->size = cnt;
+	this->size = (float)cnt;
 	this->hp = this->size * 100.0f;
+	this->gravity = -this->size * 0.1f;
 }
 
 void Boss::SetColor() {
@@ -133,17 +138,48 @@ void Boss::SetScaleMat() {
 }
 
 void Boss::SetTransMat() {
-	glm::vec3 transVec = glm::vec3(0, 0, 0);
-	glm::vec3 jumpVec = glm::vec3(0, 0, 0);
-	transVec = this->velocity * this->viewPoint * gDeltaTime;
-	transVec.y = 0.0f;
-	this->transMat = glm::translate(glm::mat4(1.0), transVec);
+	if (!gAssembleActive) {
+		glm::vec3 transVec = glm::vec3(0, 0, 0);
+		glm::vec3 jumpVec = glm::vec3(0, 0, 0);
+
+		float currentFootY = this->center.y;
+		float nextX = this->center.x + this->velocity * this->viewPoint.x * gDeltaTime;
+		if (CheckCollision(nextX, this->center.z, currentFootY, this->size, this->size)) {
+			this->isJumping = true;
+		}
+
+		float nextZ = this->center.z + this->velocity * this->viewPoint.z * gDeltaTime;
+		if (CheckCollision(this->center.x, nextZ, currentFootY, this->size, this->size)) {
+			this->isJumping = true;
+		}
+		transVec = this->velocity * this->viewPoint * gDeltaTime;
+		transVec.y = 0.0f;
+
+		if (isJumping) {
+			if (isOnGround) {
+				this->isOnGround = false;
+				this->yVelocity = this->jumpForce;
+			}
+		}
+		this->yVelocity += this->gravity;
+		float nextY = this->center.y + (this->yVelocity * gDeltaTime);
+		if (nextY <= GetTerrainHeight(this->center.x, this->center.z)) {
+			nextY = GetTerrainHeight(this->center.x, this->center.z);
+			this->isOnGround = true;
+			this->isJumping = false;
+			this->yVelocity = 0.0f;
+		}
+		float deltaY = nextY - this->center.y;
+		jumpVec = glm::vec3(0, deltaY, 0);
+
+		glm::vec3 move = transVec + jumpVec;
+		this->transMat = glm::translate(glm::mat4(1.0), move);
+	}
 }
 
 void Boss::SetModelMat() {
 	if (gAssembleActive) {
-		this->modelMat = 
-			glm::translate(glm::mat4(1.0), this->center) * this->scaleMat;
+		this->modelMat = this->scaleMat;
 	}
 	else {
 		this->modelMat = this->transMat * this->modelMat;
@@ -163,4 +199,23 @@ void Boss::Update() {
 	SetTransMat();
 	SetModelMat();
 	SetCenter();
+}
+
+glm::mat4 Boss::GetModelMat() {
+	return this->modelMat;
+}
+
+void Boss::TakeDamage(float attack) {
+	if (this->hp - attack <= 0.0f) {
+		this->hp = 0.0f;
+		this->isDestroyed = true;
+	}
+	else {
+		this->hp -= attack;
+	}
+	std::cout << "boss hp : " << this->hp << " ";
+}
+
+glm::vec3 Boss::GetCenter() {
+	return this->center;
 }

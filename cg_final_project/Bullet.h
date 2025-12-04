@@ -21,6 +21,7 @@ public:
     void Draw(std::string camera);
     bool GetDestroyed();
     bool CollisionWithTarget();
+    bool CollisionWithBoss();
 
 private:
     Model* model;

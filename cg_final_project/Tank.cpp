@@ -289,7 +289,8 @@ glm::mat4 Tank::GetModelMat() {
 }
 
 void Tank::attack() {
-    if (this->nearest == nullptr) return;
+    // 가장 가까운 기본 몬스터가 없고 보스 생성 시간이 안되었으면
+    if (this->nearest == nullptr && !gAssembleTime) return;
     // GetBulletInitLoc() : 현재 위치에서 포탄이 생성될 위치 (포구 바로 앞)
     glm::vec3 location = GetBulletInitLoc();
     Model* bulletModel = new Model;

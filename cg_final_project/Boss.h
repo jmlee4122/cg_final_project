@@ -26,6 +26,7 @@ public:
     bool CollisionWithTarget();
     float GetBoundRadius();
     void IncreaseSize(int cnt);
+    glm::mat4 GetModelMat();
 
 private:
     Model* model;
@@ -46,5 +47,7 @@ private:
     float atk_basic, atk_jump, hp;
     float size;
     bool isDestroyed;
+    bool isJumping;
+    bool isOnGround;
 };
 

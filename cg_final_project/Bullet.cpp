@@ -14,6 +14,7 @@
 #include "CameraSub.h"
 #include "Bullet.h"
 #include "Monster.h"
+#include "Boss.h"
 
 // 탱크가 attack 시에 생성자 호출
 Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
@@ -61,7 +62,7 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
-	std::cout << "bullet loc: " << this->center.x << " " << this->center.y << std::endl;
+	// std::cout << "bullet loc: " << this->center.x << " " << this->center.y << std::endl;
 }
 
 Bullet::~Bullet() {
@@ -83,9 +84,15 @@ void Bullet::SetColor() {
 }
 
 void Bullet::SetViewPoint() {
-	// 포탄에서 몬스터를 향하는 벡터를 viewpoint로 업데이트
-	glm::vec3 targetCenter = this->target->GetCenter();
-	this->viewPoint = glm::normalize(targetCenter - this->center);
+	if (this->target != nullptr) {
+		// 포탄에서 몬스터를 향하는 벡터를 viewpoint로 업데이트
+		glm::vec3 targetCenter = this->target->GetCenter();
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
+	else {
+		glm::vec3 targetCenter = myBoss->GetCenter();
+		this->viewPoint = glm::normalize(targetCenter - this->center);
+	}
 }
 
 void Bullet::SetModelMat() {
@@ -103,20 +110,33 @@ void Bullet::SetCenter() {
 }
 
 void Bullet::Update() {
-	auto it = std::find(myMonsters.begin(), myMonsters.end(), this->target);
-	if (it != myMonsters.end()) {
-		if (CollisionWithTarget()) { // monster 와 충돌
-			this->target->TakeDamage(this->atk);
+	if (target != nullptr) {
+		auto it = std::find(myMonsters.begin(), myMonsters.end(), this->target);
+		if (it != myMonsters.end()) {
+			if (CollisionWithTarget()) { // monster 와 충돌
+				this->target->TakeDamage(this->atk);
+				this->isDestroyed = true;
+			}
+
+			// 순서가 중요
+			SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+			SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
+			SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
+		}
+		else {
 			this->isDestroyed = true;
 		}
-		
+	}
+	else {
+		if (CollisionWithBoss()) { // boss 와 충돌
+			myBoss->TakeDamage(this->atk);
+			this->isDestroyed = true;
+		}
+
 		// 순서가 중요
 		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
 		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
 		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
-	}
-	else {
-		this->isDestroyed = true;
 	}
 }
 
@@ -163,6 +183,28 @@ bool Bullet::CollisionWithTarget() {
 		(c.y - tc.y) * (c.y - tc.y) +
 		(c.z - tc.z) * (c.z - tc.z);
 	if (distance <= (tr + this->boundRadius) * tr + this->boundRadius) {
+		return true;
+	}
+	return false;
+}
+
+bool Bullet::CollisionWithBoss() {
+	glm::mat4 targetModelMat = myBoss->GetModelMat();
+	glm::mat4 inverseMat = glm::inverse(targetModelMat);
+	glm::vec4 vec = inverseMat * glm::vec4(this->center, 1);
+	glm::vec3 localCenter = glm::vec3(vec);
+	glm::vec3 nearestPoint = glm::vec3(0, 0, 0);
+	nearestPoint.x = glm::clamp(localCenter.x, -gTankSize_width / 2.0f, gTankSize_width / 2.0f);
+	nearestPoint.y = glm::clamp(localCenter.y, -gTankSize_height / 2.0f, gTankSize_height / 2.0f);
+	nearestPoint.z = glm::clamp(localCenter.z, -gTankSize_depth / 2.0f, gTankSize_depth / 2.0f);
+
+	float distance =
+		(nearestPoint.x - localCenter.x) * (nearestPoint.x - localCenter.x) +
+		(nearestPoint.y - localCenter.y) * (nearestPoint.y - localCenter.y) +
+		(nearestPoint.z - localCenter.z) * (nearestPoint.z - localCenter.z);
+
+	if (distance <= this->boundRadius * this->boundRadius) {
+
 		return true;
 	}
 	return false;
