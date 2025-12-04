@@ -30,6 +30,7 @@ public:
     void IncreaseSize(int cnt);
     glm::mat4 GetModelMat();
     float GetSize();
+    void ThrowAttack();
 
 private:
     Model* model;
@@ -59,6 +60,7 @@ private:
     bool isKnockbacking;
     float maxKnockbackDis;
     float currKnockbackDis;
-
+    float lastThrowAttackTime;
+    float throwCoolTime;
 };
 

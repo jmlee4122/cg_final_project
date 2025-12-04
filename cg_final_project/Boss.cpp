@@ -42,7 +42,8 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->isKnockbacking = false;
 	this->maxKnockbackDis = 0.0f;
 	this->currKnockbackDis = 0.0f;
-
+	this->lastThrowAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	this->throwCoolTime = 5.0f;
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -244,6 +245,11 @@ void Boss::SetCenter() {
 }
 
 void Boss::Update() {
+	float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	if (currentTime - this->lastThrowAttackTime > this->throwCoolTime) {
+		ThrowAttack();
+		this->lastThrowAttackTime = currentTime;
+	}
 	if (CollisionWithTarget()) {
 		// 자신의 공격력으로 target 에게 피해를 입힘
 		this->target->TakeDamage(this->atk_basic);
@@ -321,4 +327,8 @@ void Boss::ApplyKnockback() {
 		this->currKnockbackDis = 0.0f;
 		this->isKnockbacking = false;
 	}
+}
+
+void Boss::ThrowAttack() {
+	std::cout << this->lastThrowAttackTime << std::endl;
 }
