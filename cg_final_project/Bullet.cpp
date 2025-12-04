@@ -91,7 +91,11 @@ void Bullet::SetViewPoint() {
 	}
 	else {
 		glm::vec3 targetCenter = myBoss->GetCenter();
-		this->viewPoint = glm::normalize(targetCenter - this->center);
+		glm::vec3 targetVec = glm::vec3(0, 0, 0);
+		targetVec.x = targetCenter.x - this->center.x;
+		targetVec.y = targetCenter.y - this->center.y + (myBoss->GetSize() / 2.0f);
+		targetVec.z = targetCenter.z - this->center.z;
+		this->viewPoint = glm::normalize(targetVec);
 	}
 }
 

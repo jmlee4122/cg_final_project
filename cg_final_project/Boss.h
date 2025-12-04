@@ -29,6 +29,7 @@ public:
     float GetBoundRadius();
     void IncreaseSize(int cnt);
     glm::mat4 GetModelMat();
+    float GetSize();
 
 private:
     Model* model;

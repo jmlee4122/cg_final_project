@@ -280,6 +280,10 @@ glm::vec3 Boss::GetCenter() {
 	return this->center;
 }
 
+float Boss::GetSize() {
+	return this->size;
+}
+
 bool Boss::CollisionWithTarget() {
 	glm::mat4 targetModelMat = this->target->GetModelMat();
 	glm::mat4 inverseMat = glm::inverse(targetModelMat);
