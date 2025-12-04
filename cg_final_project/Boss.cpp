@@ -245,11 +245,14 @@ void Boss::SetCenter() {
 }
 
 void Boss::Update() {
-	float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	if (currentTime - this->lastThrowAttackTime > this->throwCoolTime) {
-		ThrowAttack();
-		this->lastThrowAttackTime = currentTime;
+	if (!gAssembleActive) {
+		float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+		if (currentTime - this->lastThrowAttackTime > this->throwCoolTime) {
+			ThrowAttack();
+			this->lastThrowAttackTime = currentTime;
+		}
 	}
+	
 	if (CollisionWithTarget()) {
 		// 자신의 공격력으로 target 에게 피해를 입힘
 		this->target->TakeDamage(this->atk_basic);

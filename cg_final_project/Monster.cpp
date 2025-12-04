@@ -19,15 +19,19 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->gravity = -1.0f;
 	if (!gAssembleTime) {
 		this->isThrown = false;
-		this->thrownTarget = glm::vec3(myTank->GetCenter());
-		this->xThrowDis = this->thrownTarget.x - initLoc.x;
-		this->zThrowDis = this->thrownTarget.z - initLoc.z;
-		this->xThrowForce = xThrowDis * this->gravity / initLoc.y;
-		this->zThrowForce = zThrowDis * this->gravity / initLoc.y;
 	}
 	else {
 		this->isThrown = true;
-		this->thrownTarget = glm::vec3(0, 0, 0);
+		this->thrownTarget = glm::vec3(myTank->GetCenter());
+		this->xThrowDis = this->thrownTarget.x - initLoc.x;
+		this->zThrowDis = this->thrownTarget.z - initLoc.z;
+
+		float timeToFall = sqrt(2.0f * initLoc.y / -this->gravity);
+
+		if (timeToFall > 0) {
+			this->xThrowForce = this->xThrowDis * timeToFall;
+			this->zThrowForce = this->zThrowDis * timeToFall;
+		}
 	}
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
@@ -329,15 +333,17 @@ void Monster::ApplyKnockback() {
 }
 
 void Monster::ApplyThrowing() {
+	this->yVelocity += this->gravity;
 	glm::vec3 nextPos = glm::vec3(
-		this->center.x + this->xThrowForce,
-		this->center.y + this->gravity,
-		this->center.z + this->zThrowForce);
+		this->center.x + this->xThrowForce * gDeltaTime,
+		this->center.y + this->yVelocity * gDeltaTime,
+		this->center.z + this->zThrowForce * gDeltaTime);
+	
 	if (nextPos.y <= GetTerrainHeight(nextPos.x, nextPos.z)) {
 		nextPos.y = GetTerrainHeight(nextPos.x, nextPos.z);
 		this->center = nextPos;
 		this->modelMat = glm::translate(glm::mat4(1.0), this->center);
-
+		this->yVelocity = 0.0f;
 		this->isThrown = false;
 	}
 	else {
