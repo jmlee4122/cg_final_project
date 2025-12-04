@@ -26,15 +26,19 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->gravity = 0.0f;
 	this->center = initLoc;
 	this->viewPoint = glm::vec3(0, 0, 1);
+	this->frontVec = glm::vec3(0, 0, 1);
 	this->target = target;
 	this->size = 0.0f;
 	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 100.0f;
 	this->scaleMat = glm::mat4(1.0);
 	this->modelMat = glm::mat4(1.0);
 	this->transMat = glm::mat4(1.0);
+	this->rotateMat = glm::mat4(1.0);
+	this->rotateSpeed = 20.0f;
 	this->isDestroyed = false;
 	this->isJumping = false;
 	this->isOnGround = true;
+
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -119,15 +123,17 @@ void Boss::SetColor() {
 }
 
 void Boss::SetViewPoint() {
-	if (gAssembleActive) {
-		glm::vec3 targetCenter = glm::vec3(0, 0, 0);
-		this->viewPoint = glm::normalize(targetCenter - this->center);
-	}
-	else {
-		// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
-		glm::vec3 targetCenter = this->target->GetCenter();
-		this->viewPoint = glm::normalize(targetCenter - this->center);
-	}
+	//if (gAssembleActive) {
+	//	glm::vec3 targetCenter = glm::vec3(0, 0, 0);
+	//	this->viewPoint = glm::normalize(targetCenter - this->center);
+	//}
+	//else {
+	//	// 몬스터에서 탱크를 향하는 벡터를 viewpoint로 업데이트
+	//	glm::vec3 targetCenter = this->target->GetCenter();
+	//	this->viewPoint = glm::normalize(targetCenter - this->center);
+	//}
+	glm::vec3 targetCenter = this->target->GetCenter();
+	this->viewPoint = glm::normalize(targetCenter - this->center);
 }
 
 void Boss::SetScaleMat() {
@@ -176,20 +182,70 @@ void Boss::SetTransMat() {
 		this->transMat = glm::translate(glm::mat4(1.0), move);
 	}
 }
+void Boss::SetRotateMat() {
+	if (!gAssembleActive) {
+		// y축 회전만 고려
+		glm::vec3 normFront = glm::normalize(glm::vec3(this->frontVec.x, 0.0f, this->frontVec.z));
+		glm::vec3 normView = glm::normalize(glm::vec3(this->viewPoint.x, 0.0f, this->viewPoint.z));
+
+		// 사이각 계산
+		float cosTheta = glm::dot(normFront, normView);
+		float degree = acos(glm::clamp(cosTheta, -1.0f, 1.0f));
+
+		// 회전 방향 결정 (+: 왼쪽, -: 오른쪽)
+		float dirSign = glm::cross(normFront, normView).y;
+
+		// 회전할 각도가 매우 작으면 회전하지 않음 (떨림 방지)
+		if (glm::abs(degree) < 0.01f) {
+			this->rotateMat = glm::mat4(1.0);
+			return;
+		}
+		float rotateRadian = 0.0f;
+		// 프레임당 회전 각도 계산
+		if (dirSign > 0.0f) {
+			rotateRadian = degree * this->rotateSpeed;
+		}
+		else {
+			rotateRadian = -degree * this->rotateSpeed;
+		}
+
+		glm::mat4 t1 = glm::translate(glm::mat4(1.0), -this->center);
+		glm::mat4 r = glm::rotate(
+			glm::mat4(1.0), glm::radians(rotateRadian), glm::vec3(0, 1, 0));
+		glm::mat4 t2 = glm::translate(glm::mat4(1.0), this->center);
+		this->rotateMat = t2 * r * t1;
+
+		this->frontVec = glm::vec3(this->rotateMat * glm::vec4(this->frontVec, 0.0f));
+	}
+	else {
+		this->rotateMat = glm::mat4(1.0);
+	}
+}
 
 void Boss::SetModelMat() {
 	if (gAssembleActive) {
 		this->modelMat = this->scaleMat;
 	}
 	else {
-		this->modelMat = this->transMat * this->modelMat;
+		this->modelMat = this->transMat * this->rotateMat * this->modelMat;
 	}
 }
 
 void Boss::SetCenter() {
 	glm::vec4 vector = glm::vec4(this->center, 1);
-	vector = this->transMat * vector;
+	vector = this->transMat * this->rotateMat * vector;
 	this->center = glm::vec3(vector);
+
+	float cx = this->center.x, cy = this->center.y, cz = this->center.z;
+	float halfSize = this->size / 2;
+	cornerPoint[0] = glm::vec3(cx - halfSize, cy, cz + halfSize); // 앞-왼쪽-아래
+	cornerPoint[1] = glm::vec3(cx + halfSize, cy, cz + halfSize); // 앞-오른쪽-아래
+	cornerPoint[2] = glm::vec3(cx + halfSize, cy + this->size, cz + halfSize); // 앞-오른쪽-위
+	cornerPoint[3] = glm::vec3(cx - halfSize, cy + this->size, cz + halfSize); // 앞-왼쪽-위
+	cornerPoint[4] = glm::vec3(cx - halfSize, cy, cz - halfSize); // 뒤-왼쪽-아래
+	cornerPoint[5] = glm::vec3(cx + halfSize, cy, cz - halfSize); // 뒤-오른쪽-아래
+	cornerPoint[6] = glm::vec3(cx + halfSize, cy + this->size, cz - halfSize); // 뒤-오른쪽-위
+	cornerPoint[7] = glm::vec3(cx - halfSize, cy + this->size, cz - halfSize); // 뒤-왼쪽-위
 }
 
 void Boss::Update() {
@@ -197,6 +253,7 @@ void Boss::Update() {
 	SetScaleMat();
 	SetViewPoint();
 	SetTransMat();
+	SetRotateMat();
 	SetModelMat();
 	SetCenter();
 }

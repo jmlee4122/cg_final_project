@@ -17,6 +17,7 @@ public:
     void SetScaleMat();
     void SetTransMat();
     void SetModelMat();
+    void SetRotateMat();
     void SetCenter();
     void Update();
     glm::vec3 GetCenter();
@@ -39,9 +40,13 @@ private:
     glm::mat4 scaleMat;
     glm::mat4 modelMat;
     glm::mat4 transMat;
+    glm::mat4 rotateMat;
     Tank* target;
     glm::vec3 viewPoint;
+    glm::vec3 frontVec;
     glm::vec3 center;
+    glm::vec3 cornerPoint[8];
+    float rotateSpeed;
     float velocity, yVelocity;
     float jumpForce, gravity;
     float atk_basic, atk_jump, hp;
