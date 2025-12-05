@@ -38,8 +38,9 @@ private:
     GLuint VBO_pos, VBO_nol, EBO;
     GLuint vCount, fCount;
     GLuint uModelLoc, uViewLoc, uProjLoc;
-    GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc;
+    GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc, uAlphaLoc;
     glm::vec3 uColor;
+    float uAlpha;
     glm::mat4 scaleMat;
     glm::mat4 modelMat;
     glm::mat4 transMat;
@@ -51,7 +52,7 @@ private:
     float rotateSpeed;
     float velocity, yVelocity;
     float jumpForce, gravity;
-    float atk_basic, atk_jump, hp;
+    float atk_basic, atk_jump, hp, maxHp;
     float size;
     float boundRadius;
     bool isDestroyed;

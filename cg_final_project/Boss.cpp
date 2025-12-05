@@ -18,6 +18,7 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->uAlpha = 1.0f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->velocity = 5.0f;
@@ -30,7 +31,7 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->target = target;
 	this->size = 0.0f;
 	this->boundRadius = 0.0f;
-	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 100.0f;
+	this->atk_basic = 10.0f, this->atk_jump = 40.0f, this->hp = 100.0f, this->maxHp = 100.0f;
 	this->scaleMat = glm::mat4(1.0);
 	this->modelMat = glm::mat4(1.0);
 	this->transMat = glm::mat4(1.0);
@@ -69,6 +70,8 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+
+	this->uAlphaLoc = glGetUniformLocation(shaderProgramID, "alpha");
 	
 	std::cout << "boss created" << std::endl;
 }
@@ -108,6 +111,7 @@ void Boss::Draw(std::string camera) {
 
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));
+	glUniform1f(uAlphaLoc, uAlpha);
 	glDrawElements(GL_TRIANGLES, fCount * 3, GL_UNSIGNED_INT, (void*)(0));
 	glBindVertexArray(0);
 
@@ -118,15 +122,19 @@ void Boss::Draw(std::string camera) {
 void Boss::IncreaseSize(int cnt) {
 	this->size = (float)cnt;
 	this->hp = this->size * 100.0f;
+	this->maxHp = this->hp;
 	this->gravity = -this->size * 0.1f;
 	this->boundRadius = this->size * 0.5f;
 	this->maxKnockbackDis = this->size * 5.0f;
+	
 }
 
 void Boss::SetColor() {
-	this->uColor.r = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);
+	/*this->uColor.r = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);
 	this->uColor.g = 0.0f;
-	this->uColor.b = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);
+	this->uColor.b = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);*/
+	this->uColor = glm::vec3(1.0f, 0.0f, 1.0f);
+	this->uAlpha = glm::clamp(this->hp / this->maxHp + 0.2f, 0.0f, 1.0f);
 }
 
 void Boss::SetViewPoint() {

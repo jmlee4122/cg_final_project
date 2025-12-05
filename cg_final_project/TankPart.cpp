@@ -19,6 +19,7 @@ TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol
 	//this->modelMat = glm::mat4(1.0);
 	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f));
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->uAlpha = 1.0f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->name = name;
@@ -45,6 +46,8 @@ TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol
 
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+
+	this->uAlphaLoc = glGetUniformLocation(shaderProgramID, "alpha");
 }
 TankPart::~TankPart() {
 	glDeleteVertexArrays(1, &VAO);
@@ -103,6 +106,7 @@ void TankPart::DrawPart(std::string str) { // recursion
 	
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));
+	glUniform1f(uAlphaLoc, uAlpha);
 	glDrawElements(GL_TRIANGLES, fCount * 3, GL_UNSIGNED_INT, (void*)(0));
 	glBindVertexArray(0);
 

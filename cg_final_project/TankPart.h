@@ -23,8 +23,9 @@ private:
     GLuint VBO_pos, VBO_nol, EBO;
     GLuint vCount, fCount;
     GLuint uModelLoc, uViewLoc, uProjLoc;
-    GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc;
+    GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc, uAlphaLoc;
     glm::vec3 uColor;
+    float uAlpha;
     glm::mat4 modelMat;
     TankPart* pChild;
     std::string name;

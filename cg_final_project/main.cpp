@@ -31,6 +31,8 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	shaderProgramID = make_shaderProgram(); //--- 세이더 프로그램 만들기
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Init();
 	//CreatePlane();

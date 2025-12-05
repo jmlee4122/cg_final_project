@@ -36,6 +36,7 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->uAlpha = 1.0f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->rotateSpeed = 8.0f;
@@ -88,6 +89,8 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_po
 
 	this->uViewPosLoc = glGetUniformLocation(shaderProgramID, "viewPos");
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
+
+	this->uAlphaLoc = glGetUniformLocation(shaderProgramID, "alpha");
 }
 
 Monster::~Monster() {
@@ -266,6 +269,7 @@ void Monster::Draw(std::string camera) {
 
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));
+	glUniform1f(uAlphaLoc, uAlpha);
 	glDrawElements(GL_TRIANGLES, fCount * 3, GL_UNSIGNED_INT, (void*)(0));
 	glBindVertexArray(0);
 
