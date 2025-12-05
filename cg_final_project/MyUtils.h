@@ -24,7 +24,6 @@ GLuint make_shaderProgram();
 
 void SetProjMatMain(); // set projection matrix for main screen
 
-void CreatePlane();
 void CreateTank();
 void CreateMonster(glm::vec3 initLoc, bool isThrown);
 void CreateBoss();

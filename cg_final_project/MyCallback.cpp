@@ -99,11 +99,6 @@ GLvoid DrawScene() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	//// draw plane (sample)
-	//if (myPlane) {
-	//	myPlane->DrawPlane("main");
-	//}
-	// draw tank
 	if (myTank) {
 		myTank->DrawAllPart("main");
 	}

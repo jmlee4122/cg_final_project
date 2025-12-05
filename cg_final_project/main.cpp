@@ -35,7 +35,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Init();
-	//CreatePlane();
 	CreateTank();
 	//test
 	CreateMonster(glm::vec3(30, 0, 70), false);

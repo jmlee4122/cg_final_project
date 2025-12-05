@@ -17,7 +17,6 @@ float gTankSize_depth = 20.0f / 10.0f;
 
 //float gravity = 9.8f;
 
-Plane* myPlane = nullptr;
 Tank* myTank = nullptr;
 std::vector<Monster*> myMonsters;
 std::vector<Bullet*> myBullets;

@@ -9,7 +9,6 @@
 
 class Bullet;
 class Monster;
-class Plane;
 class Tank;
 class Boss;
 class Stage;
@@ -32,7 +31,6 @@ extern float gTankSize_depth;
 
 //extern float gravity;
 
-extern Plane* myPlane;
 extern Tank* myTank;
 extern std::vector<Monster*> myMonsters;
 extern std::vector<Bullet*> myBullets;
