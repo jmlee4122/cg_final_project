@@ -45,6 +45,7 @@ public:
 	void Respawn();
 
 	bool CollisionWithStage(float x, float z);
+	void ApplyKnockback();
 
 private:
 	bool isFront, isBack;

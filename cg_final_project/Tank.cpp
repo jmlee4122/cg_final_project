@@ -368,14 +368,20 @@ void Tank::Respawn() {
 bool Tank::CollisionWithStage(float x, float z) {
     glm::vec3 stageCenter = myStage->GetCenter();
     float stageSize = myStage->GetSize();
-    float edge[2][2] = {
-        {stageCenter.x + stageSize / 2, stageCenter.z + stageSize / 2},
-        {stageCenter.x - stageSize / 2, stageCenter.z - stageSize / 2}
-    };
+    float halfStageSize = stageSize / 2.0f;
 
-    if (this->center.x <= edge[0][0] && this->center.x >= edge[1][0] &&
-        this->center.z <= edge[0][1] && this->center.z >= edge[1][1]) {
-        return false;
+    // 스테이지의 경계 계산
+    float minX = stageCenter.x - halfStageSize;
+    float maxX = stageCenter.x + halfStageSize;
+    float minZ = stageCenter.z - halfStageSize;
+    float maxZ = stageCenter.z + halfStageSize;
+
+    float boundary = 1.0f;
+    // 탱크의 다음 위치(x, z)가 스테이지 경계 밖에 있는지 확인
+    if (x - boundary < minX || x + boundary > maxX ||
+        z - boundary < minZ || z + boundary > maxZ) {
+        return true; // 경계 밖임 (충돌)
     }
-    return true;
+
+    return false; // 경계 안임 (충돌 아님)
 }
