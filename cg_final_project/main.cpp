@@ -47,6 +47,8 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	CreateMonster(glm::vec3(150, 0, 200));
 	CreateMonster(glm::vec3(0, 0, 40));
 
+	CreateStage();
+
 	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수
 	glutReshapeFunc(Reshape);

@@ -22,6 +22,7 @@
 #include "Plane.h"
 #include "Monster.h"
 #include "Boss.h"
+#include "Stage.h"
 
 void read_newline(char* str) {
 	char* pos;
@@ -340,6 +341,11 @@ void CreateBoss() {
 	Model* bossModel = new Model;
 	read_obj_file("boss.obj", bossModel);
 	myBoss = new Boss(bossModel, myTank, glm::vec3(0, 0, 0));
+}
+void CreateStage() {
+	Model* stageModel = new Model;
+	read_obj_file("stage.obj", stageModel);
+	myStage = new Stage(stageModel);
 }
 
 

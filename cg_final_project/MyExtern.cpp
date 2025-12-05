@@ -22,6 +22,7 @@ Tank* myTank = nullptr;
 std::vector<Monster*> myMonsters;
 std::vector<Bullet*> myBullets;
 Boss* myBoss = nullptr;
+Stage* myStage = nullptr;
 CameraMain* myMainCamera = nullptr;
 CameraSub* mySubCamera = nullptr;
 

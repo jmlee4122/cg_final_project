@@ -260,7 +260,7 @@ void Boss::Update() {
 			this->lastThrowAttackTime = currentTime;
 		}
 	}
-	
+
 	if (CollisionWithTarget()) {
 		// 자신의 공격력으로 target 에게 피해를 입힘
 		this->target->TakeDamage(this->atk_basic);

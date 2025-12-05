@@ -21,6 +21,7 @@
 #include "Bullet.h"
 #include "Monster.h"
 #include "Boss.h"
+#include "Stage.h"
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
@@ -119,6 +120,10 @@ GLvoid DrawScene() {
 	}
 	if (myBoss) {
 		myBoss->Draw("main");
+	}
+
+	if (myStage) {
+		myStage->DrawStage("main");
 	}
 
 	// 2. 스카이박스 렌더링

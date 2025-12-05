@@ -27,6 +27,7 @@ void CreatePlane();
 void CreateTank();
 void CreateMonster(glm::vec3 initLoc);
 void CreateBoss();
+void CreateStage();
 
 
 
