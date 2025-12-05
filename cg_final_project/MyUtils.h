@@ -8,6 +8,8 @@ struct Vertex;
 struct Face;
 
 class Monster;
+class Ice;
+class Bullet;
 
 void read_newline(char* str);
 void read_obj_file(const char* filename, Model* model);

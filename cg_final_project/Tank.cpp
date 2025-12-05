@@ -66,6 +66,8 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
     this->width = gTankSize_width;
     this->depth = gTankSize_depth;
 
+    this->isFrozen = false;
+
     // setting camera (myExtern)
     myMainCamera = new CameraMain(this->center, this->frontVec);
     mySubCamera = new CameraSub(this->center, this->frontVec);
@@ -102,9 +104,22 @@ void Tank::Update() {
     // find & update nearest monster
     this->nearest = NearestMonster();
 
-    // update matrix
-    SetTransMat();
-    SetRotateMat();
+    if (this->isFrozen) {
+        float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+        if (currTime - this->frozenTime > 3.0f) {
+            this->isFrozen = false;
+        }
+        else {
+            this->transMat = glm::mat4(1.0);
+            this->rotateMat = glm::mat4(1.0);
+        }
+    }
+    else {
+        // update matrix
+        SetTransMat();
+        SetRotateMat();
+    }
+    
     SetViewRotMat();
     SetModelMat();
     
@@ -384,4 +399,9 @@ bool Tank::CollisionWithStage(float x, float z) {
     }
 
     return false; // 경계 안임 (충돌 아님)
+}
+
+void Tank::Frozen() {
+    this->isFrozen = true;
+    this->frozenTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 }

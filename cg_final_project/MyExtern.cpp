@@ -23,6 +23,7 @@ std::vector<Monster*> myMonsters;
 std::vector<Bullet*> myBullets;
 Boss* myBoss = nullptr;
 Stage* myStage = nullptr;
+std::vector<Ice*> myIces;
 CameraMain* myMainCamera = nullptr;
 CameraSub* mySubCamera = nullptr;
 

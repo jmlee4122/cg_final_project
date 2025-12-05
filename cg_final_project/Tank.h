@@ -46,6 +46,7 @@ public:
 
 	bool CollisionWithStage(float x, float z);
 	void ApplyKnockback();
+	void Frozen();
 
 private:
 	bool isFront, isBack;
@@ -90,5 +91,8 @@ private:
 
 	float width;
 	float depth;
+
+	bool isFrozen;
+	float frozenTime;
 };
 

@@ -23,6 +23,7 @@
 #include "Monster.h"
 #include "Boss.h"
 #include "Stage.h"
+#include "Ice.h"
 
 void read_newline(char* str) {
 	char* pos;

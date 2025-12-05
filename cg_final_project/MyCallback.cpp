@@ -22,6 +22,7 @@
 #include "Monster.h"
 #include "Boss.h"
 #include "Stage.h"
+#include "Ice.h"
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
@@ -121,9 +122,13 @@ GLvoid DrawScene() {
 	if (myBoss) {
 		myBoss->Draw("main");
 	}
-
 	if (myStage) {
 		myStage->DrawStage("main");
+	}
+	if (!myIces.empty()) {
+		for (auto r : myIces) {
+			r->Draw("main");
+		}
 	}
 
 	// 2. 스카이박스 렌더링
@@ -241,6 +246,11 @@ GLvoid Timer(int value) {
 			myStage = nullptr;
 		}
 	}
+	if (!myIces.empty()) {
+		for (auto r : myIces) {
+			r->Update();
+		}
+	}
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 
@@ -270,6 +280,7 @@ GLvoid Timer(int value) {
 	
 	RemoveDestroyed(myBullets);
 	RemoveDestroyed(myMonsters);
+	RemoveDestroyed(myIces);
 
 	glutPostRedisplay();
 	glutTimerFunc(16, Timer, 0);

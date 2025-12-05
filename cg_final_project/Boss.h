@@ -32,6 +32,7 @@ public:
     float GetSize();
     void ThrowAttack();
     void StageAttack();
+    void FreezeAttack();
 
 private:
     Model* model;
@@ -64,5 +65,6 @@ private:
     float currKnockbackDis;
     float lastThrowAttackTime, throwCoolTime;
     float lastStageAttackTime, stageCoolTime;
+    float lastFreezeAttackTime, freezeCoolTime;
 };
 

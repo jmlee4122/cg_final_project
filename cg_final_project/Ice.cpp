@@ -12,18 +12,17 @@
 #include "MyStruct.h"
 #include "CameraMain.h"
 #include "CameraSub.h"
-#include "Bullet.h"
-#include "Monster.h"
+#include "Ice.h"
+#include "Tank.h"
 #include "Boss.h"
 
-// 탱크가 attack 시에 생성자 호출
-Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
+Ice::Ice(Model* model, Tank* target, glm::vec3 loc)
 	: VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
 	this->model = model;
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
-	this->uAlpha = 1.0f;
+	this->uAlpha = 0.5f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->velocity = 60.0f;
@@ -33,7 +32,6 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	this->modelMat = glm::translate(glm::mat4(1.0), this->center) * glm::scale(glm::mat4(1.0), glm::vec3(5, 5, 5));
 	this->transMat = glm::mat4(1.0);
 
-	this->atk = attack;
 	this->isDestroyed = false;
 	this->boundRadius = 0.05;
 
@@ -64,10 +62,9 @@ Bullet::Bullet(Model* model, Monster* target, glm::vec3 loc, float attack)
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
 	this->uAlphaLoc = glGetUniformLocation(shaderProgramID, "alpha");
-	// std::cout << "bullet loc: " << this->center.x << " " << this->center.y << std::endl;
 }
 
-Bullet::~Bullet() {
+Ice::~Ice() {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO_pos);
 	glDeleteBuffers(1, &VBO_nol);
@@ -81,11 +78,11 @@ Bullet::~Bullet() {
 	}
 }
 
-void Bullet::SetColor() {
-	this->uColor = glm::vec3(1, 0, 0);
+void Ice::SetColor() {
+	this->uColor = glm::vec3(0, 0, 1);
 }
 
-void Bullet::SetViewPoint() {
+void Ice::SetViewPoint() {
 	if (this->target != nullptr) {
 		// 포탄에서 몬스터를 향하는 벡터를 viewpoint로 업데이트
 		glm::vec3 targetCenter = this->target->GetCenter();
@@ -101,56 +98,36 @@ void Bullet::SetViewPoint() {
 	}
 }
 
-void Bullet::SetModelMat() {
+void Ice::SetModelMat() {
 	// 다음 움직임을 적용하는 행렬 결정
 	glm::vec3 deltaMove = this->velocity * this->viewPoint * gDeltaTime;
 	this->transMat = glm::translate(glm::mat4(1.0), deltaMove);
 	this->modelMat = this->transMat * this->modelMat;
 }
 
-void Bullet::SetCenter() {
+void Ice::SetCenter() {
 	// 다음 움직임을 적용하는 행렬을 현재 위치에 적용 -> center 업데이트
 	glm::vec4 vector = glm::vec4(this->center, 1);
 	vector = this->transMat * vector;
 	this->center = glm::vec3(vector);
 }
 
-void Bullet::Update() {
-	if (target != nullptr) {
-		auto it = std::find(myMonsters.begin(), myMonsters.end(), this->target);
-		if (it != myMonsters.end()) {
-			if (CollisionWithTarget()) { // monster 와 충돌
-				this->target->TakeDamage(this->atk);
-				this->isDestroyed = true;
-			}
-
-			// 순서가 중요
-			SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-			SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-			SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
-		}
-		else {
-			this->isDestroyed = true;
-		}
+void Ice::Update() {
+	if (CollisionWithTarget()) {
+		this->target->Frozen();
+		this->isDestroyed = true;
 	}
-	else {
-		if (CollisionWithBoss()) { // boss 와 충돌
-			myBoss->TakeDamage(this->atk);
-			this->isDestroyed = true;
-		}
-
-		// 순서가 중요
-		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
-	}
+	// 순서가 중요
+	SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
+	SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
+	SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
 }
 
-glm::vec3 Bullet::GetCenter() {
+glm::vec3 Ice::GetCenter() {
 	return this->center;
 }
 
-void Bullet::Draw(std::string camera) {
+void Ice::Draw(std::string camera) {
 	glUseProgram(shaderProgramID);
 	glBindVertexArray(VAO);
 
@@ -176,13 +153,13 @@ void Bullet::Draw(std::string camera) {
 	glBindVertexArray(0);
 }
 
-bool Bullet::GetDestroyed() {
+bool Ice::GetDestroyed() {
 	return this->isDestroyed;
 }
 
-bool Bullet::CollisionWithTarget() {
+bool Ice::CollisionWithTarget() {
 	// collision 구현
-	float tr = this->target->GetBoundRadius(); // tr : target bound radius
+	float tr = gTankSize_depth / 2.0f; // tr : target bound radius
 	glm::vec3 tc = this->target->GetCenter(); // tc : target center
 	glm::vec3 c = this->center; // c : this object center
 	float distance =
@@ -190,40 +167,6 @@ bool Bullet::CollisionWithTarget() {
 		(c.y - tc.y) * (c.y - tc.y) +
 		(c.z - tc.z) * (c.z - tc.z);
 	if (distance <= (tr + this->boundRadius) * tr + this->boundRadius) {
-		return true;
-	}
-	return false;
-}
-
-bool Bullet::CollisionWithBoss() {
-	/*glm::mat4 targetModelMat = myBoss->GetModelMat();
-	glm::mat4 inverseMat = glm::inverse(targetModelMat);
-	glm::vec4 vec = inverseMat * glm::vec4(this->center, 1);
-	glm::vec3 localCenter = glm::vec3(vec);
-	glm::vec3 nearestPoint = glm::vec3(0, 0, 0);
-	float bossSize = myBoss->GetSize();
-	nearestPoint.x = glm::clamp(localCenter.x, -bossSize / 2.0f, bossSize / 2.0f);
-	nearestPoint.y = glm::clamp(localCenter.y, -bossSize / 2.0f, bossSize / 2.0f);
-	nearestPoint.z = glm::clamp(localCenter.z, -bossSize / 2.0f, bossSize / 2.0f);
-
-	float distance =
-		(nearestPoint.x - localCenter.x) * (nearestPoint.x - localCenter.x) +
-		(nearestPoint.y - localCenter.y) * (nearestPoint.y - localCenter.y) +
-		(nearestPoint.z - localCenter.z) * (nearestPoint.z - localCenter.z);
-
-	if (distance <= this->boundRadius * this->boundRadius) {
-
-		return true;
-	}
-	return false;*/
-	float targetSize = myBoss->GetSize();
-	glm::vec3 targetCenter = myBoss->GetCenter();
-	float currDistance =
-		(targetCenter.x - this->center.x) * (targetCenter.x - this->center.x) +
-		(targetCenter.y - this->center.y) * (targetCenter.y - this->center.y) +
-		(targetCenter.z - this->center.z) * (targetCenter.z - this->center.z);
-	float dis = (this->boundRadius + targetSize / 2.0f) * (this->boundRadius + targetSize / 2.0f);
-	if (currDistance <= dis) {
 		return true;
 	}
 	return false;

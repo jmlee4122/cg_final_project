@@ -5,13 +5,13 @@
 #include <gl/glm/glm.hpp>
 
 struct Model;
-class Monster;
+class Tank;
 
-class Bullet
+class Ice
 {
 public:
-    Bullet(Model* model, Monster* target, glm::vec3 loc, float attack); // 포탄은 몬스터를 포인터로 받음
-    ~Bullet();
+    Ice(Model* model, Tank* target, glm::vec3 loc); // 포탄은 몬스터를 포인터로 받음
+    ~Ice();
     void SetColor();
     void SetViewPoint();
     void SetModelMat();
@@ -21,7 +21,6 @@ public:
     void Draw(std::string camera);
     bool GetDestroyed();
     bool CollisionWithTarget();
-    bool CollisionWithBoss();
 
 private:
     Model* model;
@@ -34,11 +33,10 @@ private:
     float uAlpha;
     glm::mat4 modelMat;
     glm::mat4 transMat;
-    Monster* target;
+    Tank* target;
     glm::vec3 viewPoint;
     glm::vec3 center;
     float velocity;
-    float atk;
     bool isDestroyed;
     float boundRadius;
 };

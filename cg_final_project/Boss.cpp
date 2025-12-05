@@ -13,6 +13,7 @@
 #include "CameraSub.h"
 #include "Boss.h"
 #include "Tank.h"
+#include "Ice.h"
 
 Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->model = model;
@@ -45,8 +46,10 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->currKnockbackDis = 0.0f;
 	this->lastThrowAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	this->lastStageAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	this->lastFreezeAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;;
 	this->throwCoolTime = 5.0f;
 	this->stageCoolTime = 15.0f;
+	this->freezeCoolTime = 8.0f;
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -265,6 +268,10 @@ void Boss::Update() {
 			StageAttack();
 			this->lastStageAttackTime = currentTime;
 		}
+		if (currentTime - this->lastFreezeAttackTime > this->freezeCoolTime) {
+			FreezeAttack();
+			this->lastFreezeAttackTime = currentTime;
+		}
 	}
 
 	if (CollisionWithTarget()) {
@@ -358,5 +365,15 @@ void Boss::ThrowAttack() {
 
 void Boss::StageAttack() {
 	glm::vec3 initLoc = this->target->GetCenter();
+	initLoc.y = 0.0f;
 	CreateStage(initLoc);
+}
+
+void Boss::FreezeAttack() {
+	glm::vec3 location = this->center;
+	location.y += this->size / 2.0f;
+	Model* iceModel = new Model;
+	read_obj_file("bullet.obj", iceModel);
+	Ice* newIce = new Ice(iceModel, this->target, location);
+	myIces.push_back(newIce);
 }
