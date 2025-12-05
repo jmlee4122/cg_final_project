@@ -76,6 +76,17 @@ void TankPart::SetColor() {
 		std::cout << "error: wrong name" << std::endl;
 }
 
+void TankPart::SetFrozenColor() {
+	if (name == "bottom")
+		this->uColor = glm::vec3(0.1f, 0.1f, 0.3f);
+	else if (name == "mid")
+		this->uColor = glm::vec3(0.2f, 0.3f, 0.5f);
+	else if (name == "top")
+		this->uColor = glm::vec3(0.3f, 0.4f, 0.7f);
+	else if (name == "barrel")
+		this->uColor = glm::vec3(0.4f, 0.5f, 0.9f);
+}
+
 void TankPart::SetModelMat(glm::mat4 m) { // recursion
 	this->modelMat = m * this->modelMat;
 	if (this->pChild == nullptr) return;

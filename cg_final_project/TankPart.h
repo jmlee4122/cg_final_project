@@ -12,6 +12,7 @@ public:
 	TankPart(Model* model, std::string name);
     ~TankPart();
     void SetColor();
+    void SetFrozenColor();
     void SetModelMat(glm::mat4 m);
     void DrawPart(std::string str);
     void SetChild(TankPart* child);

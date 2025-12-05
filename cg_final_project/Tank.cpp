@@ -108,6 +108,10 @@ void Tank::Update() {
         float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
         if (currTime - this->frozenTime > 3.0f) {
             this->isFrozen = false;
+            this->bottom->SetColor();
+            this->mid->SetColor();
+            this->top->SetColor();
+            this->barrel->SetColor();
         }
         else {
             this->transMat = glm::mat4(1.0);
@@ -404,4 +408,9 @@ bool Tank::CollisionWithStage(float x, float z) {
 void Tank::Frozen() {
     this->isFrozen = true;
     this->frozenTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+    this->bottom->SetFrozenColor();
+    this->mid->SetFrozenColor();
+    this->top->SetFrozenColor();
+    this->barrel->SetFrozenColor();
 }
