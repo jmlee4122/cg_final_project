@@ -15,6 +15,7 @@
 #include "Monster.h"
 #include "Bullet.h"
 #include "Stage.h"
+#include "Boss.h"
 
 Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelModel) {
     // create tank part
@@ -233,7 +234,15 @@ void Tank::SetViewRotMat() {
     glm::vec3 targetVec = glm::vec3(0, 0, 0);
 
     if (this->nearest == nullptr) {
-        targetVec = this->frontVec;
+        if (myBoss == nullptr) {
+            targetVec = this->frontVec;
+        }
+        else {
+            glm::vec3 bc = myBoss->GetCenter();
+            targetVec.x = bc.x - this->center.x;
+            targetVec.y = 0.0f;
+            targetVec.z = bc.z - this->center.z;
+        }
     }
     else {
         glm::vec3 nc = this->nearest->GetCenter();
