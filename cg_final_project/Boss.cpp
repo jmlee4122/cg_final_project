@@ -41,14 +41,14 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->isJumping = false;
 	this->isOnGround = true;
 	this->isKnockbacking = false;
-	this->maxKnockbackDis = 0.0f;
+	this->maxKnockbackDis = 50.0f;
 	this->currKnockbackDis = 0.0f;
 	this->lastThrowAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	this->lastStageAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	this->lastFreezeAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;;
 	this->throwCoolTime = 5.0f;
 	this->stageCoolTime = 15.0f;
-	this->freezeCoolTime = 8.0f;
+	this->freezeCoolTime = 10.0f;
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -127,8 +127,6 @@ void Boss::IncreaseSize(int cnt) {
 	this->maxHp = this->hp;
 	this->gravity = -this->size * 0.1f;
 	this->boundRadius = this->size * 0.5f;
-	this->maxKnockbackDis = this->size * 5.0f;
-	
 }
 
 void Boss::SetColor() {
@@ -300,7 +298,7 @@ void Boss::TakeDamage(float attack) {
 	else {
 		this->hp -= attack;
 	}
-	std::cout << "boss hp : " << this->hp << " ";
+	std::cout << "boss hp : " << this->hp << std::endl;
 }
 
 glm::vec3 Boss::GetCenter() {
@@ -309,6 +307,10 @@ glm::vec3 Boss::GetCenter() {
 
 float Boss::GetSize() {
 	return this->size;
+}
+
+bool Boss::GetDestroyed() {
+	return this->isDestroyed;
 }
 
 bool Boss::CollisionWithTarget() {

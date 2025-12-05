@@ -97,6 +97,10 @@ void Tank::SetIsRight(bool value) { this->isRight = value; }
 void Tank::SetIsJumping(bool value) { this->isJumping = value; }
 
 void Tank::Update() {
+    float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+    if (gAssembleTime) {
+        this->atk = currTime - 180.0f;
+    }
     if (this->center.y < -30.0f) {
         Respawn();
     }
@@ -104,7 +108,6 @@ void Tank::Update() {
     this->nearest = NearestMonster();
 
     if (this->isFrozen) {
-        float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
         if (currTime - this->frozenTime > 3.0f) {
             this->isFrozen = false;
             this->bottom->SetColor();

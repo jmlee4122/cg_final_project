@@ -310,7 +310,6 @@ void CreateMonster(glm::vec3 initLoc, bool isThrown) {
 		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
 		return;
 	}
-	std::cout << "myTank is valid" << std::endl;
 	Model* monsterModel = new Model;
 	read_obj_file("monster.obj", monsterModel);
 	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc, isThrown));

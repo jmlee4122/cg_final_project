@@ -28,7 +28,7 @@ Ice::Ice(Model* model, Tank* target, glm::vec3 loc)
 	this->center = loc;
 	this->viewPoint = glm::vec3(0, 0, 0);
 	this->target = target;
-	this->modelMat = glm::translate(glm::mat4(1.0), this->center) * glm::scale(glm::mat4(1.0), glm::vec3(5, 5, 5));
+	this->modelMat = glm::translate(glm::mat4(1.0), this->center) * glm::scale(glm::mat4(1.0), glm::vec3(8, 8, 8));
 	this->transMat = glm::mat4(1.0);
 
 	this->isDestroyed = false;

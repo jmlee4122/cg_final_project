@@ -24,7 +24,7 @@
 
 GLvoid DrawScene() {
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	if (currentFrame > 10.0f && !gAssembleTime && !gAssembleActive) {
+	if (currentFrame > 180.0f && !gAssembleTime && !gAssembleActive) {
 		gAssembleTime = true;
 		gAssembleActive = true;
 		for (auto r : myMonsters) {
@@ -199,62 +199,71 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 }
 
 GLvoid Timer(int value) {
-	if (myTank) myTank->Update();
-	if (!myBullets.empty()) {
-		for (auto r : myBullets) {
-			r->Update();
+	if (gIsRunning) {
+		if (myTank) myTank->Update();
+		if (!myBullets.empty()) {
+			for (auto r : myBullets) {
+				r->Update();
+			}
 		}
-	}
-	if (!myMonsters.empty()) {
-		for (auto r : myMonsters) {
-			r->Update();
+		if (!myMonsters.empty()) {
+			for (auto r : myMonsters) {
+				r->Update();
+			}
 		}
-	}
-	if (myBoss) myBoss->Update();
-	if (myStage) {
-		float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-		if (currTime - gStageStart >= gStageDuration) {
-			delete myStage;
-			myStage = nullptr;
+		if (myBoss) myBoss->Update();
+		if (myStage) {
+			float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+			if (currTime - gStageStart >= gStageDuration) {
+				delete myStage;
+				myStage = nullptr;
+			}
 		}
-	}
-	if (!myIces.empty()) {
-		for (auto r : myIces) {
-			r->Update();
+		if (!myIces.empty()) {
+			for (auto r : myIces) {
+				r->Update();
+			}
 		}
-	}
-	if (myMainCamera) myMainCamera->UpdateVectors();
+		if (myMainCamera) myMainCamera->UpdateVectors();
 
-	if (gAssembleActive && gAssembleTime) {
-		for (auto r : myMonsters) {
-			if (r->IsAtOrigin()) {
-				r->SetDestroyed(true);
-				gAssembleCount += 1;
-				// 처음으로 기본 몬스터가 원점에 도달한 경우
-				// boss 몬스터를 생성
-				if (gAssembleCount == 1 && myBoss == nullptr) {
-					CreateBoss();
+		if (gAssembleActive && gAssembleTime) {
+			for (auto r : myMonsters) {
+				if (r->IsAtOrigin()) {
+					r->SetDestroyed(true);
+					gAssembleCount += 1;
+					// 처음으로 기본 몬스터가 원점에 도달한 경우
+					// boss 몬스터를 생성
+					if (gAssembleCount == 1 && myBoss == nullptr) {
+						CreateBoss();
+					}
 				}
+			}
+
+			if (gAssembleCount >= 1 && myBoss != nullptr) {
+				myBoss->IncreaseSize(gAssembleCount);
+			}
+
+			if (myMonsters.empty()) {
+				gAssembleActive = false;
+				// std::cout << "### All assembled ###" << std::endl;
+				std::cout << "basic monster count : " << gAssembleCount << std::endl;
 			}
 		}
 
-		if (gAssembleCount >= 1 && myBoss != nullptr) {
-			myBoss->IncreaseSize(gAssembleCount);
+		RemoveDestroyed(myBullets);
+		RemoveDestroyed(myMonsters);
+		RemoveDestroyed(myIces);
+		if (myBoss) {
+			if (myBoss->GetDestroyed()) {
+				delete myBoss;
+				myBoss = nullptr;
+				gIsRunning = false;
+			}
 		}
 
-		if (myMonsters.empty()) {
-			gAssembleActive = false;
-			// std::cout << "### All assembled ###" << std::endl;
-			std::cout << "basic monster count : " << gAssembleCount << std::endl;
-		}
+		glutPostRedisplay();
+		glutTimerFunc(16, Timer, 0);
 	}
-	
-	RemoveDestroyed(myBullets);
-	RemoveDestroyed(myMonsters);
-	RemoveDestroyed(myIces);
-
-	glutPostRedisplay();
-	glutTimerFunc(16, Timer, 0);
 }
 
 GLvoid Mouse(int button, int state, int x, int y) {

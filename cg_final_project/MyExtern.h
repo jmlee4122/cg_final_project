@@ -15,6 +15,7 @@ class Stage;
 class Ice;
 class CameraMain;
 
+extern bool gIsRunning;
 
 extern GLuint vertexShader;
 extern GLuint fragmentShader;

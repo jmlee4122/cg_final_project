@@ -107,11 +107,12 @@ Monster::~Monster() {
 }
 
 void Monster::SetColor() {
+	this->uColor = glm::vec3(1, 1, 0);
 	if (this->hp > 10.0f) {
-		this->uColor = glm::vec3(0.0, 1.0, 0.0);
+		this->uAlpha = 1.0f;
 	}
 	else {
-		this->uColor = glm::vec3(1.0, 1.0, 0.0);
+		this->uAlpha = 0.7f;
 	}
 }
 

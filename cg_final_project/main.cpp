@@ -37,14 +37,17 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	Init();
 	CreateTank();
 	//test
-	CreateMonster(glm::vec3(30, 0, 70), false);
-	CreateMonster(glm::vec3(50, 0, 0), false);
-	CreateMonster(glm::vec3(100, 0, 40), false);
-	CreateMonster(glm::vec3(200, 0, 40), false);
-	CreateMonster(glm::vec3(300, 0, 40), false);
-	CreateMonster(glm::vec3(0, 0, 400), false);
-	CreateMonster(glm::vec3(150, 0, 200), false);
-	CreateMonster(glm::vec3(0, 0, 40), false);
+	for (int i = 0; i < 10; i++) {
+		CreateMonster(glm::vec3(30, 0, 70), false);
+		CreateMonster(glm::vec3(50, 0, 0), false);
+		CreateMonster(glm::vec3(100, 0, 40), false);
+		CreateMonster(glm::vec3(200, 0, 40), false);
+		CreateMonster(glm::vec3(300, 0, 40), false);
+		CreateMonster(glm::vec3(0, 0, 400), false);
+		CreateMonster(glm::vec3(150, 0, 200), false);
+		CreateMonster(glm::vec3(0, 0, 40), false);
+	}
+	
 
 	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수

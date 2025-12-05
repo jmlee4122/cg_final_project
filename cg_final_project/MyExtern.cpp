@@ -2,6 +2,8 @@
 #include "MyStruct.h"
 #include <vector>
 
+bool gIsRunning = true;
+
 GLuint vertexShader;
 GLuint fragmentShader;
 GLuint shaderProgramID;
