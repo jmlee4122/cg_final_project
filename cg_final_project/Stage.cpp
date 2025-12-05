@@ -13,13 +13,16 @@
 #include "CameraMain.h"
 #include "CameraSub.h"
 
-Stage::Stage(Model* model) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
+Stage::Stage(Model* model, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
 	this->uColor = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->uAlpha = 1.0f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
-	this->modelMat = glm::scale(glm::mat4(1.0), glm::vec3(2, 2, 2));
+	this->size = 100.0f;
+	this->scaleMat = glm::scale(glm::mat4(1.0), glm::vec3(2, 2, 2));
+	this->modelMat = glm::translate(glm::mat4(1.0), initLoc) * this->scaleMat;
+	this->center = initLoc;
 	// 노말 데이터가 있는지 확인
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -77,4 +80,12 @@ void Stage::DrawStage(std::string str) {
 void Stage::SetColor() {
 	this->uColor = glm::vec3(1.0, 0.0, 0.0);
 	this->uAlpha = 0.5f;
+}
+
+glm::vec3 Stage::GetCenter() {
+	return this->center;
+}
+
+float Stage::GetSize() {
+	return this->size;
 }

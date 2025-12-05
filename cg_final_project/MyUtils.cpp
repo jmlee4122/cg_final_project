@@ -342,10 +342,10 @@ void CreateBoss() {
 	read_obj_file("boss.obj", bossModel);
 	myBoss = new Boss(bossModel, myTank, glm::vec3(0, 0, 0));
 }
-void CreateStage() {
+void CreateStage(glm::vec3 initLoc) {
 	Model* stageModel = new Model;
 	read_obj_file("stage.obj", stageModel);
-	myStage = new Stage(stageModel);
+	myStage = new Stage(stageModel, initLoc);
 }
 
 

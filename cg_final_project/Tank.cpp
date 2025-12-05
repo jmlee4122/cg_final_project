@@ -15,6 +15,7 @@
 #include "MyStruct.h"
 #include "Monster.h"
 #include "Bullet.h"
+#include "Stage.h"
 
 Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelModel) {
     // create tank part
@@ -161,9 +162,15 @@ void Tank::SetTransMat() {
         if (CheckCollision(nextX, this->center.z, currentFootY, this->width, this->depth)) {
             transVec.x = 0.0f; // 충돌 있으면 이동 적용 x
         }
+        else if (CollisionWithStage(nextX, this->center.z)) {
+            transVec.x = 0.0f;
+        }
         float nextZ = this->center.z + transVec.z;
         if (CheckCollision(this->center.x, nextZ, currentFootY, this->width, this->depth)) {
             transVec.z = 0.0f; // 충돌 있으면 이동 적용 x
+        }
+        else if (CollisionWithStage(this->center.x, nextZ)) {
+            transVec.z = 0.0f;
         }
     }
 
@@ -356,4 +363,19 @@ void Tank::Respawn() {
     this->mid->ResetModelMat();
     this->top->ResetModelMat();
     this->barrel->ResetModelMat();
+}
+
+bool Tank::CollisionWithStage(float x, float z) {
+    glm::vec3 stageCenter = myStage->GetCenter();
+    float stageSize = myStage->GetSize();
+    float edge[2][2] = {
+        {stageCenter.x + stageSize / 2, stageCenter.z + stageSize / 2},
+        {stageCenter.x - stageSize / 2, stageCenter.z - stageSize / 2}
+    };
+
+    if (this->center.x <= edge[0][0] && this->center.x >= edge[1][0] &&
+        this->center.z <= edge[0][1] && this->center.z >= edge[1][1]) {
+        return false;
+    }
+    return true;
 }

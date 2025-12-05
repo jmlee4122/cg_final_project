@@ -11,10 +11,12 @@ struct Model;
 class Stage
 {
 public:
-    Stage(Model* model);
+    Stage(Model* model, glm::vec3 initLoc);
     ~Stage();
     void DrawStage(std::string str);
     void SetColor();
+    glm::vec3 GetCenter();
+    float GetSize();
 
 private:
     GLuint VAO;
@@ -24,6 +26,9 @@ private:
     GLuint uLightPosLoc, uLightColorLoc, uObjColorLoc, uViewPosLoc, uAlphaLoc;
     glm::vec3 uColor;
     float uAlpha;
+    glm::mat4 scaleMat;
     glm::mat4 modelMat;
+    float size;
+    glm::vec3 center;
 };
 
