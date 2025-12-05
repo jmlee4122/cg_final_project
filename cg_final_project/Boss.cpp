@@ -44,7 +44,9 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->maxKnockbackDis = 0.0f;
 	this->currKnockbackDis = 0.0f;
 	this->lastThrowAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	this->lastStageAttackTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 	this->throwCoolTime = 5.0f;
+	this->stageCoolTime = 15.0f;
 
 	if (model->normals == nullptr) {
 		std::cerr << "ERROR: Model normals are not loaded!" << std::endl;
@@ -259,6 +261,10 @@ void Boss::Update() {
 			ThrowAttack();
 			this->lastThrowAttackTime = currentTime;
 		}
+		if (currentTime - this->lastStageAttackTime > this->stageCoolTime) {
+			StageAttack();
+			this->lastStageAttackTime = currentTime;
+		}
 	}
 
 	if (CollisionWithTarget()) {
@@ -348,4 +354,9 @@ void Boss::ThrowAttack() {
 	thrownLoc.z = this->center.z;
 
 	CreateMonster(thrownLoc);
+}
+
+void Boss::StageAttack() {
+	glm::vec3 initLoc = this->target->GetCenter();
+	CreateStage(initLoc);
 }

@@ -162,14 +162,14 @@ void Tank::SetTransMat() {
         if (CheckCollision(nextX, this->center.z, currentFootY, this->width, this->depth)) {
             transVec.x = 0.0f; // 충돌 있으면 이동 적용 x
         }
-        else if (CollisionWithStage(nextX, this->center.z)) {
+        else if (myStage && CollisionWithStage(nextX, this->center.z)) {
             transVec.x = 0.0f;
         }
         float nextZ = this->center.z + transVec.z;
         if (CheckCollision(this->center.x, nextZ, currentFootY, this->width, this->depth)) {
             transVec.z = 0.0f; // 충돌 있으면 이동 적용 x
         }
-        else if (CollisionWithStage(this->center.x, nextZ)) {
+        else if (myStage && CollisionWithStage(this->center.x, nextZ)) {
             transVec.z = 0.0f;
         }
     }

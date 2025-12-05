@@ -47,10 +47,15 @@ Stage::Stage(Model* model, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), 
 	this->uObjColorLoc = glGetUniformLocation(shaderProgramID, "objectColor");
 
 	this->uAlphaLoc = glGetUniformLocation(shaderProgramID, "alpha");
+
+	gStageStart = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 }
 
 Stage::~Stage() {
-
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO_pos);
+	glDeleteBuffers(1, &VBO_nol);
+	glDeleteBuffers(1, &EBO);
 }
 
 void Stage::DrawStage(std::string str) {

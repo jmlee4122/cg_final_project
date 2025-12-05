@@ -234,6 +234,13 @@ GLvoid Timer(int value) {
 		}
 	}
 	if (myBoss) myBoss->Update();
+	if (myStage) {
+		float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+		if (currTime - gStageStart >= gStageDuration) {
+			delete myStage;
+			myStage = nullptr;
+		}
+	}
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 

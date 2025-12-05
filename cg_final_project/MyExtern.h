@@ -91,3 +91,6 @@ extern glm::vec3 lightColor;
 extern bool gAssembleTime;
 extern bool gAssembleActive;
 extern int gAssembleCount;
+
+extern float gStageStart;
+extern float gStageDuration;
