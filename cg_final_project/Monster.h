@@ -10,7 +10,7 @@ class Tank;
 class Monster
 {
 public:
-    Monster(Model* model, Tank* target, glm::vec3 initLoc); // 생성될 때 탱크 포인터를 받는다.
+    Monster(Model* model, Tank* target, glm::vec3 initLoc, bool isThrown); // 생성될 때 탱크 포인터를 받는다.
     ~Monster();
     void SpeedUp();
     void SetColor();

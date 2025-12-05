@@ -324,7 +324,7 @@ void CreateTank() {
 	// create tank
 	myTank = new Tank(bottomModel, midModel, topModel, barrelModel);
 }
-void CreateMonster(glm::vec3 initLoc) {
+void CreateMonster(glm::vec3 initLoc, bool isThrown) {
 	if (myTank == nullptr) {
 		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
 		return;
@@ -332,7 +332,7 @@ void CreateMonster(glm::vec3 initLoc) {
 	std::cout << "myTank is valid" << std::endl;
 	Model* monsterModel = new Model;
 	read_obj_file("monster.obj", monsterModel);
-	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc));
+	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc, isThrown));
 }
 void CreateBoss() {
 	if (myTank == nullptr) {

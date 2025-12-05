@@ -14,10 +14,10 @@
 #include "Monster.h"
 #include "Tank.h"
 
-Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
+Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc, bool isThrown) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	// 변수 초기화
 	this->gravity = -1.0f;
-	if (!gAssembleTime) {
+	if (!isThrown) {
 		this->isThrown = false;
 	}
 	else {

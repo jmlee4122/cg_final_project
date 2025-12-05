@@ -191,9 +191,6 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 	case ' ':
 		if (myTank) myTank->SetIsJumping(true);
 		break;
-	case 't':
-		CreateMonster(glm::vec3(0, 0, 40));
-		break;
 	case 'q':
 		glutLeaveMainLoop();
 		break;

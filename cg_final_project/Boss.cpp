@@ -139,7 +139,7 @@ void Boss::SetColor() {
 	this->uColor.g = 0.0f;
 	this->uColor.b = glm::clamp(this->hp / 1000.0f, 0.0f, 1.0f);*/
 	this->uColor = glm::vec3(1.0f, 0.0f, 1.0f);
-	this->uAlpha = glm::clamp(this->hp / this->maxHp + 0.2f, 0.0f, 1.0f);
+	this->uAlpha = glm::clamp(this->hp / this->maxHp + 0.2f, 0.6f, 1.0f);
 }
 
 void Boss::SetViewPoint() {
@@ -360,7 +360,7 @@ void Boss::ThrowAttack() {
 	thrownLoc.y = this->center.y + this->size / 2.0f;
 	thrownLoc.z = this->center.z;
 
-	CreateMonster(thrownLoc);
+	CreateMonster(thrownLoc, true);
 }
 
 void Boss::StageAttack() {
