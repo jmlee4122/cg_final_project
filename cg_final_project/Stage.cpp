@@ -11,7 +11,6 @@
 #include "MyExtern.h"
 #include "MyStruct.h"
 #include "CameraMain.h"
-#include "CameraSub.h"
 
 Stage::Stage(Model* model, glm::vec3 initLoc) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->vCount = model->vertex_count, this->fCount = model->face_count;
@@ -72,8 +71,6 @@ void Stage::DrawStage(std::string str) {
 	glm::vec3 cameraPos = glm::vec3(0, 0, 0);
 	if (str == "main")
 		cameraPos = myMainCamera->GetEye();
-	else if (str == "sub")
-		cameraPos = mySubCamera->GetEye();
 
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));

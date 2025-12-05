@@ -10,7 +10,6 @@
 #include "MyExtern.h"
 #include "MyStruct.h"
 #include "CameraMain.h"
-#include "CameraSub.h"
 #include "Monster.h"
 #include "Tank.h"
 
@@ -264,8 +263,6 @@ void Monster::Draw(std::string camera) {
 	glm::vec3 cameraPos = glm::vec3(0, 0, 0);
 	if (camera == "main")
 		cameraPos = myMainCamera->GetEye();
-	else if (camera == "sub")
-		cameraPos = mySubCamera->GetEye();
 
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));

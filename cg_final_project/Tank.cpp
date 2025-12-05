@@ -9,7 +9,6 @@
 #include "Tank.h"
 #include "TankPart.h"
 #include "CameraMain.h"
-#include "CameraSub.h"
 #include "MyUtils.h"
 #include "MyExtern.h"
 #include "MyStruct.h"
@@ -70,7 +69,6 @@ Tank::Tank(Model* bottomModel, Model* midModel, Model* topModel, Model* barrelMo
 
     // setting camera (myExtern)
     myMainCamera = new CameraMain(this->center, this->frontVec);
-    mySubCamera = new CameraSub(this->center, this->frontVec);
 }
 Tank::~Tank() {
     if (this->bottom) {
@@ -137,7 +135,6 @@ void Tank::Update() {
     SetRemaining();
     //UpdateCameraVectors(this->modelMat, this->center, this->frontVec); // in MyUtils.h
     myMainCamera->SetModelMat(transformMat);
-    mySubCamera->SetCenterViewPoint(this->center, this->frontVec);
 }
 void Tank::SetTransMat() {
     float targetSpeed = 0.0f;

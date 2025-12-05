@@ -17,9 +17,7 @@
 #include "MyUtils.h"
 #include "MyExtern.h"
 #include "MyStruct.h"
-#include "CameraSub.h"
 #include "Tank.h"
-#include "Plane.h"
 #include "Monster.h"
 #include "Boss.h"
 #include "Stage.h"
@@ -289,24 +287,7 @@ void SetProjMatMain() {
 	float zFar = 1000.0f;
 	gProjMat = glm::perspective(fovy, aspect, zNear, zFar);
 }
-void SetProjMatSub() {
-	float targetSize = gTankSize_depth;
-	float orthoHalfSize = targetSize * 10.0f;
-	float left = -orthoHalfSize;
-	float right = orthoHalfSize;
-	float bottom = -orthoHalfSize;
-	float top = orthoHalfSize;
-	float zNear = 0.0f;
-	float zFar = mySubCamera->GetHeight() * 1.2f;
-	gProjMat = glm::ortho(left, right, bottom, top, zNear, zFar);
-}
 
-void CreatePlane() {
-	// create plane (sample)
-	Model* planeModel = new Model;
-	read_obj_file("plane_100.obj", planeModel);
-	myPlane = new Plane(planeModel);
-}
 void CreateTank() {
 	// Tank constructor param
 	Model* bottomModel = new Model;

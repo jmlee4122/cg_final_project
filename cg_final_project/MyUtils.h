@@ -23,7 +23,6 @@ void make_fragmentShaders();
 GLuint make_shaderProgram();
 
 void SetProjMatMain(); // set projection matrix for main screen
-void SetProjMatSub(); // set projection matrix for mini map
 
 void CreatePlane();
 void CreateTank();

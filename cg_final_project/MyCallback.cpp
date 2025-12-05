@@ -16,8 +16,6 @@
 #include "MyUtils.h"
 #include "Tank.h"
 #include "CameraMain.h"
-#include "CameraSub.h"
-#include "Plane.h"
 #include "Bullet.h"
 #include "Monster.h"
 #include "Boss.h"
@@ -148,24 +146,6 @@ GLvoid DrawScene() {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthFunc(GL_LESS);
 
-
-	//// draw mini map
-	//glClear(GL_DEPTH_BUFFER_BIT);
-	//glViewport(window_w - minimap_size, window_h - minimap_size, minimap_size, minimap_size);
-	//// change view & projection matrix
-	//if (mySubCamera) {
-	//	mySubCamera->ChangeViewMat();
-	//	SetProjMatSub();
-	//}
-	//// draw plane (sample)
-	//if (myPlane) {
-	//	myPlane->DrawPlane("sub");
-	//}
-	//// draw tank
-	//if (myTank) {
-	//	myTank->DrawAllPart("sub");
-	//}
-
 	glutSwapBuffers();
 }
 
@@ -249,7 +229,6 @@ GLvoid Timer(int value) {
 		}
 	}
 	if (myMainCamera) myMainCamera->UpdateVectors();
-	if (mySubCamera) mySubCamera->UpdateVectors();
 
 	if (gAssembleActive && gAssembleTime) {
 		for (auto r : myMonsters) {

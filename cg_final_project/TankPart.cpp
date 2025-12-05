@@ -11,7 +11,6 @@
 #include "MyExtern.h"
 #include "MyStruct.h"
 #include "CameraMain.h"
-#include "CameraSub.h"
 
 TankPart::TankPart(Model* model, std::string name) : VAO(0), VBO_pos(0), VBO_nol(0), EBO(0) {
 	this->model = model;
@@ -112,8 +111,6 @@ void TankPart::DrawPart(std::string str) { // recursion
 	glm::vec3 cameraPos = glm::vec3(0, 0, 0);
 	if (str == "main")
 		cameraPos = myMainCamera->GetEye();
-	else if (str == "sub")
-		cameraPos = mySubCamera->GetEye();
 	
 	glUniform3f(uViewPosLoc, cameraPos.x, cameraPos.y, cameraPos.z);
 	glUniform3fv(uObjColorLoc, 1, glm::value_ptr(uColor));

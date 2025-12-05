@@ -25,8 +25,6 @@ Boss* myBoss = nullptr;
 Stage* myStage = nullptr;
 std::vector<Ice*> myIces;
 CameraMain* myMainCamera = nullptr;
-CameraSub* mySubCamera = nullptr;
-
 
 
 // --- 전역 변수 ---

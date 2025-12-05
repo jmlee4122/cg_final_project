@@ -15,7 +15,6 @@ class Boss;
 class Stage;
 class Ice;
 class CameraMain;
-class CameraSub;
 
 
 extern GLuint vertexShader;
@@ -41,7 +40,6 @@ extern Boss* myBoss;
 extern Stage* myStage;
 extern std::vector<Ice*> myIces;
 extern CameraMain* myMainCamera;
-extern CameraSub* mySubCamera;
 
 
 
