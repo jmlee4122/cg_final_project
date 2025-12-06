@@ -18,15 +18,44 @@
 #include "CameraMain.h"
 #include "CameraSub.h"
 #include "Plane.h"
+#include "Bullet.h"
+#include "Monster.h"
+#include "UserInterface.h"
+
+int currentScene = STATE_TITLE;
+float gameStartTime = 0.0f;
 
 GLvoid DrawScene() {
-	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
+	// 1. 타이틀 화면일 때
+	if (currentScene == STATE_TITLE) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// 타이틀 그리기
+		DrawTitleScreen(titleTexture, SCR_WIDTH, SCR_HEIGHT);
+
+		glutSwapBuffers();
+		return; // 게임 로직 실행 안 함
+	}
+	if (currentScene == STATE_FAILURE) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawFailScreen(failTexture, SCR_WIDTH, SCR_HEIGHT); // 실패 화면 그리기
+
+		glutSwapBuffers();
+		return;
+	}
+	//2. 게임 화면일 때
+	float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+	float inGameTime = currentTime - gameStartTime;
+	gDeltaTime = currentTime - lastFrame;
+	lastFrame = currentTime;
 
 	// 1. 시간 흐름 계산 (3분 = 180초)
 	float maxTime = 180.0f;
-	float ratio = currentFrame / maxTime;
+	float ratio = inGameTime / maxTime;
 	if (ratio > 1.0f) ratio = 1.0f;
 
 	// 2. 조명 색상 (지형용)
@@ -50,7 +79,7 @@ GLvoid DrawScene() {
 	// --- 렌더링 시작 ---
 	glClearColor(currentSkyColor.r, currentSkyColor.g, currentSkyColor.b, 1.0f); // 배경 초기화색도 맞춤
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, window_w, window_h);
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 	// change view & projection matrix
 	// draw main screen
 	if (myMainCamera) {
@@ -96,6 +125,16 @@ GLvoid DrawScene() {
 	if (myTank) {
 		myTank->DrawAllPart("main");
 	}
+	if (!myBullets.empty()) {
+		for (auto r : myBullets) {
+			r->Draw("main");
+		}
+	}
+	if (!myMonsters.empty()) {
+		for (auto r : myMonsters) {
+			r->Draw("main");
+		}
+	}
 
 	// 2. 스카이박스 렌더링
 	glDepthFunc(GL_LEQUAL);
@@ -131,16 +170,46 @@ GLvoid DrawScene() {
 	//if (myTank) {
 	//	myTank->DrawAllPart("sub");
 	//}
+	if (myTank && myTank->GetHP() <= 0.0f) {
+		currentScene = STATE_FAILURE;
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+	}
+
+	// 3. 인게임 UI 그리기
+	if (myTank) {
+		// Tank 클래스에 Getter가 없으면 Tank.h에 float GetHp() { return hp; } 추가 필요
+		// 여기서는 임시로 hp에 접근한다고 가정하거나 getter 사용
+		DrawInGameUI(inGameTime, myTank->GetHP(), 100.0f, SCR_WIDTH, SCR_HEIGHT);
+	}
 
 	glutSwapBuffers();
 }
 
 GLvoid Reshape(int w, int h) {
-	window_w = w;
-	window_h = h;
+	SCR_WIDTH = w;
+	SCR_HEIGHT = h;
 }
 
 GLvoid Keyboard(unsigned char key, int x, int y) {
+	// 타이틀 화면에서 스페이스바 처리
+	if (currentScene == STATE_TITLE) {
+		if (key == ' ') {
+			currentScene = STATE_PLAY;
+			gameStartTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+			ResetGame();
+
+			glutSetCursor(GLUT_CURSOR_NONE);
+		}
+		return;
+	}
+	//실패 화면에서 스페이스바 -> 타이틀로 이동
+	if (currentScene == STATE_FAILURE) {
+		if (key == ' ') {
+			currentScene = STATE_TITLE; // 타이틀로 돌아감
+		}
+		return;
+	}
 	switch (key) {
 	case 'w':
 		if (myTank) myTank->SetIsFront(true);
@@ -153,6 +222,9 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		break;
 	case 'd':
 		if (myTank) myTank->SetIsRight(true);
+		break;
+	case ' ':
+		if (myTank) myTank->SetIsJumping(true);
 		break;
 	case 'q':
 		glutLeaveMainLoop();
@@ -188,6 +260,21 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 
 GLvoid Timer(int value) {
 	if (myTank) myTank->Update();
+	if (!myBullets.empty()) {
+		for (auto r : myBullets) {
+			r->Update();
+		}
+		RemoveDestroyed(myBullets);
+	}
+	if (!myMonsters.empty()) {
+		for (auto r : myMonsters) {
+			r->Update();
+		}
+		RemoveDestroyed(myMonsters);
+	}
+	
+	ManageMonsterSpawning();
+
 	if (myMainCamera) myMainCamera->UpdateVectors();
 	if (mySubCamera) mySubCamera->UpdateVectors();
 	glutPostRedisplay();
@@ -195,8 +282,43 @@ GLvoid Timer(int value) {
 }
 
 GLvoid Mouse(int button, int state, int x, int y) {
-
+	if (button == GLUT_LEFT_BUTTON) {
+		if (state == GLUT_DOWN) {
+			myTank->attack();
+		}
+	}
+	glutPostRedisplay();
 }
 GLvoid MouseMotion(int x, int y) {
 
+}
+
+GLvoid PassiveMotion(int x, int y) {
+	// 화면 중앙 좌표 계산
+	int centerX = SCR_WIDTH / 2;
+	int centerY = SCR_HEIGHT / 2;
+
+	// 1. 만약 마우스가 이미 중앙에 있다면 계산할 필요 없음 
+	// (glutWarpPointer로 인해 호출된 경우 무시)
+	if (x == centerX && y == centerY) return;
+
+	// 2. 중앙을 기준으로 얼마나 움직였는지 차이(Offset) 계산
+	float xoffset = (float)(x - centerX);
+	float yoffset = (float)(centerY - y); // Y좌표는 위로 갈수록 작아지므로 반대로 계산
+
+	// 3. 감도 적용 및 각도 업데이트
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	// 마우스 움직임 방향대로 카메라 회전 (이전 요청 반영: -= 사용)
+	yaw -= xoffset;
+	pitch -= yoffset;
+
+	// 각도 제한
+	if (pitch > 89.0f) pitch = 89.0f;
+	if (pitch < 5.0f) pitch = 5.0f;
+
+	// 4. [핵심] 마우스를 다시 화면 중앙으로 강제 이동
+	glutWarpPointer(centerX, centerY);
 }

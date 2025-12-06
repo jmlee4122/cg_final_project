@@ -10,8 +10,8 @@
 #include "MyUtils.h"
 #include "MyStruct.h"
 #include "MyCallback.h"
-
-
+#include "Monster.h"
+#include "Bullet.h"
 
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 {
@@ -20,7 +20,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(window_w, window_h);
+	glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
 	glutCreateWindow("Example1");
 	//--- GLEW 초기화하기
 	glewExperimental = GL_TRUE;
@@ -35,7 +35,12 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	Init();
 	//CreatePlane();
 	CreateTank();
+	////test
+	//CreateMonster(glm::vec3(30, 0, 70));
+	//CreateMonster(glm::vec3(50, 0, 0));
+	//CreateMonster(glm::vec3(0, 0, 40));
 
+	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
@@ -43,7 +48,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 	glutMouseFunc(Mouse);
-	glutPassiveMotionFunc(MouseMotion);  // 버튼 누르지 않아도 동작
+	glutPassiveMotionFunc(PassiveMotion);
 	glutTimerFunc(0, Timer, 0);
 	glutMainLoop();
 

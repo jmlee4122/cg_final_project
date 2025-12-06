@@ -17,6 +17,7 @@ public:
     void SetChild(TankPart* child);
 
 private:
+    Model* model;
     GLuint VAO;
     GLuint VBO_pos, VBO_nol, EBO;
     GLuint vCount, fCount;

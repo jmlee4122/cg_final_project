@@ -20,6 +20,9 @@
 #include "CameraSub.h"
 #include "Tank.h"
 #include "Plane.h"
+#include "Monster.h"
+
+
 
 void read_newline(char* str) {
 	char* pos;
@@ -280,7 +283,7 @@ GLuint make_shaderProgram()
 
 void SetProjMatMain() {
 	float fovy = glm::radians(60.0f);
-	float aspect = (float)window_w / (float)window_h;
+	float aspect = (float)SCR_WIDTH / (float)SCR_HEIGHT;
 	float zNear = 0.1f;
 	float zFar = 1000.0f;
 	gProjMat = glm::perspective(fovy, aspect, zNear, zFar);
@@ -321,8 +324,66 @@ void CreateTank() {
 	myTank = new Tank(bottomModel, midModel, topModel, barrelModel);
 }
 
+glm::vec3 GetRandomSpawnPos() {
+	if (!myTank) return glm::vec3(0, 0, 0);
 
+	glm::vec3 playerPos = myTank->GetCenter();
 
+	// 1. 랜덤 각도 (0 ~ 360도)
+	float angle = (float)(rand() % 360);
+	float radian = glm::radians(angle);
+
+	// 2. 랜덤 거리 (Min ~ Max 사이)
+	// rand() % N 은 정수만 나오므로, 100을 곱해서 랜덤을 돌리고 다시 100으로 나눔
+	int minR = (int)(SPAWN_RADIUS_MIN * 10.0f);
+	int maxR = (int)(SPAWN_RADIUS_MAX * 10.0f);
+	float distance = (float)(minR + rand() % (maxR - minR)) / 10.0f;
+
+	// 3. X, Z 좌표 계산 (원형 좌표계)
+	float x = playerPos.x + distance * cos(radian);
+	float z = playerPos.z + distance * sin(radian);
+
+	// 4. 맵 밖으로 나가지 않게 보정 (맵 크기 MAP_SIZE 고려)
+	// 맵 좌표는 -500 ~ 500 (BLOCK_SIZE가 1.0일 때)
+	float limit = (MAP_SIZE / 2.0f) * BLOCK_SIZE - 5.0f; // 가장자리는 피함
+	if (x > limit) x = limit;
+	if (x < -limit) x = -limit;
+	if (z > limit) z = limit;
+	if (z < -limit) z = -limit;
+
+	// 5. 지형 높이 가져오기
+	float y = GetTerrainHeight(x, z);
+
+	return glm::vec3(x, y, z);
+}
+
+// [추가] 몬스터 스폰 관리자
+void ManageMonsterSpawning() {
+	// 게임 중이 아니거나 탱크가 없으면 패스
+	if (currentScene != STATE_PLAY || myTank == nullptr) return;
+
+	// 현재 몬스터 수가 최대치보다 적을 때만 생성 시도
+	if (myMonsters.size() < MAX_MONSTERS) {
+
+		// 매 프레임 무조건 생성하면 20마리가 1초만에 팍! 생김
+		// 약간의 랜덤성을 두어 "순차적"으로 생성되게 함 (예: 5% 확률)
+		if ((rand() % 100) < SPAWN_CHANCE) {
+			glm::vec3 spawnPos = GetRandomSpawnPos();
+			CreateMonster(spawnPos);
+			// std::cout << "Monster Spawned! Total: " << myMonsters.size() << std::endl;
+		}
+	}
+}
+void CreateMonster(glm::vec3 initLoc) {
+	if (myTank == nullptr) {
+		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
+		return;
+	}
+	std::cout << "myTank is valid" << std::endl;
+	Model* monsterModel = new Model;
+	read_obj_file("monster.obj", monsterModel);
+	myMonsters.push_back(new Monster(monsterModel, myTank, initLoc));
+}
 
 
 
@@ -561,6 +622,8 @@ void Init() {
 	SetupObjects();
 	grassTexture = LoadBitmapTexture("grass.bmp");
 	boxTexture = LoadBitmapTexture("box.bmp");
+	titleTexture = LoadBitmapTexture("title.bmp");
+	failTexture = LoadBitmapTexture("fail.bmp");
 
 	GLuint textureID; glGenTextures(1, &textureID); glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	GLubyte data[3] = { 135, 206, 235 };
@@ -578,10 +641,68 @@ void Init() {
 	float centerHeight = GetTerrainHeight(0.0f, 0.0f);
 
 	// 중앙 높이보다 2.0f만큼 위에서 시작 (안전하게 착지하도록)
-	objectPos = glm::vec3(0.0f, centerHeight + 2.0f, 0.0f);
-	cameraTarget = objectPos;
+	//objectPos = glm::vec3(0.0f, centerHeight + 2.0f, 0.0f);
+	//cameraTarget = objectPos;
 
 	std::cout << "Spawned at Center Height: " << centerHeight << std::endl;
 
-	for (int i = 0; i < 256; i++) keyState[i] = false;
+	//for (int i = 0; i < 256; i++) keyState[i] = false;
+}
+void ResetGame() {
+	// 1. 기존 메모리 해제
+	if (myTank) {
+		delete myTank;
+		myTank = nullptr;
+	}
+	// 카메라는 Tank 생성자에서 new로 할당되므로, 기존 것은 지워줘야 메모리 누수 방지
+	if (myMainCamera) {
+		delete myMainCamera;
+		myMainCamera = nullptr;
+	}
+	if (mySubCamera) {
+		delete mySubCamera;
+		mySubCamera = nullptr;
+	}
+
+	// 몬스터 비우기
+	for (auto& m : myMonsters) {
+		if (m) delete m;
+	}
+	myMonsters.clear();
+
+	// 총알 비우기
+	for (auto& b : myBullets) {
+		if (b) delete b;
+	}
+	myBullets.clear();
+
+	// 2. 객체 재생성 (Init 함수나 main의 로직과 동일하게)
+	CreateTank();
+	CreateMonster(GetRandomSpawnPos());
+
+	std::cout << "Game Reset Complete!" << std::endl;
+}
+
+
+bool CheckCollision(float targetX, float targetZ, float footY) {
+	// 충돌 박스 크기 (플레이어 크기의 절반보다 살짝 작게 설정하여 끼임 방지)
+	// playerSize가 0.8이므로 반경은 0.4지만, 0.3 정도로 여유를 둠
+
+	// 검사할 4개의 모서리 좌표
+	float corners[4][2] = {
+		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 위
+		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ - gTankSize_depth / 2.0f * 0.8f }, // 오른쪽 위
+		{ targetX - gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }, // 왼쪽 아래
+		{ targetX + gTankSize_width / 2.0f * 0.8f, targetZ + gTankSize_depth / 2.0f * 0.8f }  // 오른쪽 아래
+	};
+
+	// 4개 모서리 중 하나라도 높은 벽에 닿으면 충돌로 간주
+	for (int i = 0; i < 4; ++i) {
+		float h = GetTerrainHeight(corners[i][0], corners[i][1]);
+		// 등반 허용 높이 (0.1f) - 이보다 높으면 벽으로 인식
+		if (h > footY + 0.1f) {
+			return true; // 충돌
+		}
+	}
+	return false; // 안전함
 }
