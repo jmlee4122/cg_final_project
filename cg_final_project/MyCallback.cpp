@@ -216,6 +216,9 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 
 			glutSetCursor(GLUT_CURSOR_NONE);
 		}
+		if (key == 'q') {
+			glutLeaveMainLoop();
+		}
 		return;
 	}
 	//실패 화면에서 스페이스바 -> 타이틀로 이동
@@ -223,11 +226,17 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		if (key == ' ') {
 			currentScene = STATE_TITLE; // 타이틀로 돌아감
 		}
+		if (key == 'q') {
+			glutLeaveMainLoop();
+		}
 		return;
 	}
 	if (currentScene == STATE_CLEAR) {
 		if (key == ' ') {
 			currentScene = STATE_TITLE; // 타이틀로 복귀
+		}
+		if (key == 'q') {
+			glutLeaveMainLoop();
 		}
 		return;
 	}
