@@ -48,6 +48,16 @@ GLvoid DrawScene() {
 		glutSwapBuffers();
 		return;
 	}
+	if (currentScene == STATE_CLEAR) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawClearScreen(clearTexture, SCR_WIDTH, SCR_HEIGHT); // 클리어 화면 그리기
+
+		glutSwapBuffers();
+		return;
+	}
+
 
 	float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
 
@@ -177,12 +187,16 @@ GLvoid DrawScene() {
 	}
 
 	// 3. 인게임 UI 그리기
-	if (myTank) {
+	if (myTank && !myBoss) {
 		// Tank 클래스에 Getter가 없으면 Tank.h에 float GetHp() { return hp; } 추가 필요
 		// 여기서는 임시로 hp에 접근한다고 가정하거나 getter 사용
-		DrawInGameUI(inGameTime, myTank->GetHP(), 100.0f, SCR_WIDTH, SCR_HEIGHT);
+		DrawInGameUI(inGameTime,myTank->GetHP(),100.0f , 0, 0, SCR_WIDTH, SCR_HEIGHT);
 	}
-
+	else if (myTank && myBoss) {
+		// Tank 클래스에 Getter가 없으면 Tank.h에 float GetHp() { return hp; } 추가 필요
+		// 여기서는 임시로 hp에 접근한다고 가정하거나 getter 사용
+		DrawInGameUI(inGameTime, myTank->GetHP(), 100.0f, myBoss->GetBossHP(), myBoss->GetBossMaxHP(), SCR_WIDTH, SCR_HEIGHT);
+	}
 	glutSwapBuffers();
 }
 
@@ -211,7 +225,12 @@ GLvoid Keyboard(unsigned char key, int x, int y) {
 		}
 		return;
 	}
-
+	if (currentScene == STATE_CLEAR) {
+		if (key == ' ') {
+			currentScene = STATE_TITLE; // 타이틀로 복귀
+		}
+		return;
+	}
 	switch (key) {
 	case 'w':
 		if (myTank) myTank->SetIsFront(true);
@@ -261,6 +280,11 @@ GLvoid SpecialKeyUp(int key, int x, int y) {
 }
 
 GLvoid Timer(int value) {
+	if (currentScene != STATE_PLAY) {
+		glutPostRedisplay();
+		glutTimerFunc(16, Timer, 0);
+		return;
+	}
 	if (gIsRunning) {
 		if (myTank) myTank->Update();
 		if (!myBullets.empty()) {
@@ -320,7 +344,8 @@ GLvoid Timer(int value) {
 			if (myBoss->GetDestroyed()) {
 				delete myBoss;
 				myBoss = nullptr;
-				gIsRunning = false;
+				currentScene = STATE_CLEAR;
+				glutSetCursor(GLUT_CURSOR_INHERIT);
 			}
 		}
 

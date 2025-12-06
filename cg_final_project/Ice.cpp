@@ -69,9 +69,9 @@ Ice::~Ice() {
 	glDeleteBuffers(1, &VBO_nol);
 	glDeleteBuffers(1, &EBO);
 	if (this->model != nullptr) {
-		if (this->model->vertices) delete[] this->model->vertices;
-		if (this->model->normals) delete[] this->model->normals;
-		if (this->model->faces) delete[] this->model->faces;
+		if (this->model->vertices) free(this->model->vertices);
+		if (this->model->normals) free(this->model->normals);
+		if (this->model->faces) free(this->model->faces);
 		delete this->model;
 		this->model = nullptr;
 	}

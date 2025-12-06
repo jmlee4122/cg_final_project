@@ -39,7 +39,7 @@ Monster::Monster(Model* model, Tank* target, glm::vec3 initLoc, bool isThrown) :
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
 	this->rotateSpeed = 8.0f;
-	this->velocity = 10.0f;
+	this->velocity = 20.0f;
 	this->yVelocity = 0.0f;
 	this->jumpForce = 20.0f;
 	this->center = initLoc;

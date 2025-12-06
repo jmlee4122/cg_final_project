@@ -17,4 +17,5 @@ void DrawRect(float x, float y, float w, float h, glm::vec3 color);
 // 전체 UI 그리기 함수
 void DrawTitleScreen(GLuint texID, int scrWidth, int scrHeight);
 void DrawFailScreen(GLuint texID, int scrWidth, int scrHeight);
-void DrawInGameUI(float time, float currentHp, float maxHp, int scrWidth, int scrHeight);
+void DrawClearScreen(GLuint texID, int scrWidth, int scrHeight);
+void DrawInGameUI(float time, float currentHp, float maxHp, float boss_currentHp, float boss_maxHp, int scrWidth, int scrHeight);

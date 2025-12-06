@@ -21,7 +21,7 @@ Boss::Boss(Model* model, Tank* target, glm::vec3 initLoc) : VAO(0), VBO_pos(0), 
 	this->uAlpha = 1.0f;
 	this->uLightColorLoc = 0, this->uLightPosLoc = 0, this->uViewPosLoc = 0, this->uObjColorLoc = 0;
 	this->uProjLoc = 0, this->uViewLoc = 0, this->uModelLoc = 0;
-	this->velocity = 5.0f;
+	this->velocity = 10.0f;
 	this->yVelocity = 0.0f;
 	this->jumpForce = 20.0f;
 	this->gravity = 0.0f;

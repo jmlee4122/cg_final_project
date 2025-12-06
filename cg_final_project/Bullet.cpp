@@ -72,9 +72,9 @@ Bullet::~Bullet() {
 	glDeleteBuffers(1, &VBO_nol);
 	glDeleteBuffers(1, &EBO);
 	if (this->model != nullptr) {
-		if (this->model->vertices) delete[] this->model->vertices;
-		if (this->model->normals) delete[] this->model->normals;
-		if (this->model->faces) delete[] this->model->faces;
+		if (this->model->vertices) free(this->model->vertices);
+		if (this->model->normals) free(this->model->normals);
+		if (this->model->faces) free(this->model->faces);
 		delete this->model;
 		this->model = nullptr;
 	}
@@ -86,17 +86,26 @@ void Bullet::SetColor() {
 
 void Bullet::SetViewPoint() {
 	if (this->target != nullptr) {
-		// 포탄에서 몬스터를 향하는 벡터를 viewpoint로 업데이트
+		// 일반 몬스터 타겟
 		glm::vec3 targetCenter = this->target->GetCenter();
 		this->viewPoint = glm::normalize(targetCenter - this->center);
 	}
 	else {
-		glm::vec3 targetCenter = myBoss->GetCenter();
-		glm::vec3 targetVec = glm::vec3(0, 0, 0);
-		targetVec.x = targetCenter.x - this->center.x;
-		targetVec.y = targetCenter.y - this->center.y + (myBoss->GetSize() / 2.0f);
-		targetVec.z = targetCenter.z - this->center.z;
-		this->viewPoint = glm::normalize(targetVec);
+		// 보스 타겟 (보스가 존재할 때만 계산)
+		if (myBoss != nullptr) {
+			glm::vec3 targetCenter = myBoss->GetCenter();
+			glm::vec3 targetVec = glm::vec3(0, 0, 0);
+			targetVec.x = targetCenter.x - this->center.x;
+			targetVec.y = targetCenter.y - this->center.y + (myBoss->GetSize() / 2.0f);
+			targetVec.z = targetCenter.z - this->center.z;
+			this->viewPoint = glm::normalize(targetVec);
+		}
+		else {
+			// [추가] 타겟도 없고 보스도 없으면(재시작 직후 등) 그냥 정면으로 날아가거나 제자리 유지
+			this->viewPoint = glm::vec3(0, 0, 1);
+			// 혹은 즉시 파괴
+			this->isDestroyed = true;
+		}
 	}
 }
 
@@ -133,15 +142,21 @@ void Bullet::Update() {
 		}
 	}
 	else {
-		if (CollisionWithBoss()) { // boss 와 충돌
-			myBoss->TakeDamage(this->atk);
+		// myBoss가 존재할 때만 충돌 검사 수행
+		if (myBoss != nullptr) {
+			if (CollisionWithBoss()) {
+				myBoss->TakeDamage(this->atk);
+				this->isDestroyed = true;
+			}
+			// ... (SetViewPoint 등 이동 로직) ...
+			SetViewPoint();
+			SetModelMat();
+			SetCenter();
+		}
+		else {
+			// 보스가 없는데 보스 타겟 탄환이면 그냥 파괴하거나 날아가게 둠
 			this->isDestroyed = true;
 		}
-
-		// 순서가 중요
-		SetViewPoint(); // target 의 움직임에 따라 시선을 업데이트
-		SetModelMat(); // 업데이트된 시선과 속도에 따라 변환 행렬 업데이트
-		SetCenter(); // 업데이트된 행렬에 따라 위치값 업데이트
 	}
 }
 

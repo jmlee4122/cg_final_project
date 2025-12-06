@@ -617,6 +617,11 @@ void Init() {
 	SetupObjects();
 	grassTexture = LoadBitmapTexture("grass.bmp");
 	boxTexture = LoadBitmapTexture("box.bmp");
+	titleTexture = LoadBitmapTexture("start_image.bmp");
+	failTexture = LoadBitmapTexture("death_image.bmp");
+	clearTexture = LoadBitmapTexture("clear_image.bmp");
+
+
 
 	GLuint textureID; glGenTextures(1, &textureID); glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 	GLubyte data[3] = { 135, 206, 235 };
@@ -643,36 +648,47 @@ void Init() {
 }
 
 void ResetGame() {
-	// 1. 기존 메모리 해제
-	if (myTank) {
-		delete myTank;
-		myTank = nullptr;
-	}
-	// 카메라는 Tank 생성자에서 new로 할당되므로, 기존 것은 지워줘야 메모리 누수 방지
-	if (myMainCamera) {
-		delete myMainCamera;
-		myMainCamera = nullptr;
-	}
+	// 1. 기존 객체 메모리 해제
+	// 탱크 & 카메라
+	if (myTank) { delete myTank; myTank = nullptr; }
+	if (myMainCamera) { delete myMainCamera; myMainCamera = nullptr; }
 
-	// 몬스터 비우기
+	// [추가] 보스 & 스테이지 해제
+	if (myBoss) { delete myBoss; myBoss = nullptr; }
+	if (myStage) { delete myStage; myStage = nullptr; }
+
+	// 벡터 컨테이너 비우기 (몬스터)
 	for (auto& m : myMonsters) {
 		if (m) delete m;
 	}
 	myMonsters.clear();
 
-	// 총알 비우기
+	// 벡터 컨테이너 비우기 (총알)
 	for (auto& b : myBullets) {
 		if (b) delete b;
 	}
 	myBullets.clear();
 
-	// 2. 객체 재생성 (Init 함수나 main의 로직과 동일하게)
+	// [추가] 벡터 컨테이너 비우기 (얼음 공격)
+	for (auto& i : myIces) {
+		if (i) delete i;
+	}
+	myIces.clear();
+
+	// 2. 전역 상태 변수 초기화 (중요!)
+	// 이 변수들을 초기화 안 하면 재시작 시 바로 보스전으로 넘어가거나 로직이 꼬임
+	gAssembleTime = false;
+	gAssembleActive = false;
+	gAssembleCount = 0;
+
+	// 3. 필수 객체 재생성
 	CreateTank();
+
+	// 시작하자마자 몬스터 한 마리는 바로 보이게 (나머지는 스폰 매니저가 채움)
 	CreateMonster(GetRandomSpawnPos(), false);
 
-	std::cout << "Game Reset Complete!" << std::endl;
+	std::cout << "Game Reset Complete (Boss & Stage included)!" << std::endl;
 }
-
 
 bool CheckCollision(float targetX, float targetZ, float footY, float size_w, float size_d) {
 	// 충돌 박스 크기 (플레이어 크기의 절반보다 살짝 작게 설정하여 끼임 방지)

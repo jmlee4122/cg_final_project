@@ -1,5 +1,6 @@
 // UserInterface.cpp
 #include "UserInterface.h"
+#include "MyExtern.h"
 #include <cstdio>
 
 void Begin2D() {
@@ -101,9 +102,7 @@ void DrawTitleScreen(GLuint texID, int scrWidth, int scrHeight) {
 
     if (texID != 0) glDisable(GL_TEXTURE_2D);
 
-    // 안내 문구
-    std::string msg = "Press SPACE to Start";
-    RenderLargeText((float)scrWidth / 2.0f - 250.0f, (float)scrHeight / 4.0f, msg, 0.5f, glm::vec3(1, 1, 0));
+ 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -139,22 +138,50 @@ void DrawFailScreen(GLuint texID, int scrWidth, int scrHeight) {
     glEnd();
 
     if (texID != 0) glDisable(GL_TEXTURE_2D);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_DEPTH_TEST);
+}
+void DrawClearScreen(GLuint texID, int scrWidth, int scrHeight) {
+    glUseProgram(0);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
 
-    // 실패 메시지 출력
-    /*std::string msg1 = "MISSION FAILED";*/
-    std::string msg2 = "Press SPACE to Return Title";
+    // 배경 그리기 (다른 화면들과 동일)
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, scrWidth, 0, scrHeight, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-    // 중앙에 붉은색 글씨로 크게
-   /* RenderLargeText((float)scrWidth / 2.0f - 300.0f, (float)scrHeight / 2.0f + 50, msg1, 0.8f, glm::vec3(1, 0, 0));*/
-    // 그 아래 안내 문구
-    RenderLargeText((float)scrWidth / 2.0f - 350.0f, (float)scrHeight / 2.0f - 150, msg2, 0.4f, glm::vec3(1, 1, 1));
+    if (texID == 0) {
+        glColor3f(0.0f, 0.0f, 0.5f); // 이미지가 없으면 파란색 배경
+    }
+    else {
+        glColor3f(1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texID);
+    }
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex2f(0, 0);
+    glTexCoord2f(1, 0); glVertex2f((float)scrWidth, 0);
+    glTexCoord2f(1, 1); glVertex2f((float)scrWidth, (float)scrHeight);
+    glTexCoord2f(0, 1); glVertex2f(0, (float)scrHeight);
+    glEnd();
+
+    if (texID != 0) glDisable(GL_TEXTURE_2D);
+
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
 }
-void DrawInGameUI(float time, float currentHp, float maxHp, int scrWidth, int scrHeight) {
+
+void DrawInGameUI(float time, float currentHp, float maxHp,float boss_currentHp, float boss_maxHp, int scrWidth, int scrHeight) {
     glUseProgram(0);
     // 2D 모드 진입 (좌표계: 0~Width, 0~Height)
     glMatrixMode(GL_PROJECTION);
@@ -166,8 +193,8 @@ void DrawInGameUI(float time, float currentHp, float maxHp, int scrWidth, int sc
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
 
-    // 1. 좌측 상단: 타이머 (3분 = 180초)
-    if (time < 180.0f) {
+    // 1. 좌측 상단: 타이머
+    if (time < boss_time) {
         int min = (int)time / 60;
         int sec = (int)time % 60;
         char buf[100];
@@ -183,8 +210,14 @@ void DrawInGameUI(float time, float currentHp, float maxHp, int scrWidth, int sc
 
         // 배경 (회색)
         DrawRect(barX, barY, barW, barH, glm::vec3(0.3f, 0.3f, 0.3f));
+
+        // 보스 체력 비율 계산
+        float bossRatio = boss_currentHp / boss_maxHp;
+        if (bossRatio < 0) bossRatio = 0;
+
         // 체력 (빨강) - 현재는 100%로 고정
-        DrawRect(barX, barY, barW, barH, glm::vec3(0.8f, 0.0f, 0.0f));
+        DrawRect(barX, barY, barW * bossRatio, barH, glm::vec3(0.8f, 0.0f, 0.0f));
+
 
         // 텍스트
         RenderText(barX + barW / 2.0f - 40, barY + 5, "BOSS", GLUT_BITMAP_HELVETICA_18, glm::vec3(1, 1, 1));

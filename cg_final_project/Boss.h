@@ -34,6 +34,9 @@ public:
     void StageAttack();
     void FreezeAttack();
 
+    float GetBossHP() { return this->hp; }
+    float GetBossMaxHP() { return this->maxHp; }
+
 private:
     Model* model;
     GLuint VAO;

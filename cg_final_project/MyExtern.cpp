@@ -79,3 +79,10 @@ float gStageDuration = 10.0f;
 
 GLuint failTexture = 0;
 GLuint titleTexture = 0;
+GLuint clearTexture = 0;
+
+const int MAX_MONSTERS = 50;        // 최대 몬스터 수
+const float SPAWN_RADIUS_MIN = 60.0f; // 최소 거리
+const float SPAWN_RADIUS_MAX = 120.0f; // 최대 거리 (시야 밖 생성)
+const int SPAWN_CHANCE = 4;  // 프레임당 생성 확률
+const float boss_time = 60.0f; // 보스 등장 시간 (초)
