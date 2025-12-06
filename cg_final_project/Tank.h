@@ -41,6 +41,7 @@ public:
 	Monster* NearestMonster();
 	glm::vec3 GetBulletInitLoc();
 	void TakeDamage(float attack);
+	float GetHP() { return this->hp; }
 
 	void Respawn();
 

@@ -87,9 +87,29 @@ extern GLuint cubeVAO, cubeVBO, skyboxVAO, skyboxVBO;
 extern glm::vec3 lightPos;
 extern glm::vec3 lightColor;
 
+
 extern bool gAssembleTime;
 extern bool gAssembleActive;
 extern int gAssembleCount;
 
 extern float gStageStart;
 extern float gStageDuration;
+
+// [UI 시스템 추가]
+enum GameState {
+    STATE_TITLE,
+    STATE_PLAY,
+    STATE_FAILURE
+};
+
+
+extern int currentScene;       // 현재 게임 상태
+extern float gameStartTime;    // 게임이 실제로 시작된 시간 (타이틀에서 보낸 시간 제외)
+extern GLuint titleTexture;    // 타이틀 화면 이미지
+extern GLuint failTexture;
+
+const int MAX_MONSTERS = 20;        // 최대 몬스터 수
+const float SPAWN_RADIUS_MIN = 60.0f; // 최소 거리
+const float SPAWN_RADIUS_MAX = 120.0f; // 최대 거리 (시야 밖 생성)
+const int SPAWN_CHANCE = 5;  // 프레임당 생성 확률
+const float boss_time = 30.0f; // 보스 등장 시간 (초)

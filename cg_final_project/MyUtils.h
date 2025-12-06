@@ -57,3 +57,9 @@ void RemoveDestroyed(std::vector<T*>& myVec) {
 }
 
 bool AllAssembled();
+
+void ResetGame();
+
+// 몬스터 스폰 관리 함수
+void ManageMonsterSpawning();
+glm::vec3 GetRandomSpawnPos();

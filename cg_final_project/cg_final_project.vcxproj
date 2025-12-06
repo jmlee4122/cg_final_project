@@ -31,6 +31,7 @@
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TankPart.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Boss.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="TankPart.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

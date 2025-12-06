@@ -99,7 +99,7 @@ void Tank::SetIsJumping(bool value) { this->isJumping = value; }
 void Tank::Update() {
     float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
     if (gAssembleTime) {
-        this->atk = currTime - 180.0f;
+        this->atk = currTime - boss_time;
     }
     if (this->center.y < -30.0f) {
         Respawn();

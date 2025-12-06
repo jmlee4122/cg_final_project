@@ -305,6 +305,58 @@ void CreateTank() {
 	// create tank
 	myTank = new Tank(bottomModel, midModel, topModel, barrelModel);
 }
+
+
+glm::vec3 GetRandomSpawnPos() {
+	if (!myTank) return glm::vec3(0, 0, 0);
+
+	glm::vec3 playerPos = myTank->GetCenter();
+
+	// 1. 랜덤 각도 (0 ~ 360도)
+	float angle = (float)(rand() % 360);
+	float radian = glm::radians(angle);
+
+	// 2. 랜덤 거리 (Min ~ Max 사이)
+	// rand() % N 은 정수만 나오므로, 100을 곱해서 랜덤을 돌리고 다시 100으로 나눔
+	int minR = (int)(SPAWN_RADIUS_MIN * 10.0f);
+	int maxR = (int)(SPAWN_RADIUS_MAX * 10.0f);
+	float distance = (float)(minR + rand() % (maxR - minR)) / 10.0f;
+
+	// 3. X, Z 좌표 계산 (원형 좌표계)
+	float x = playerPos.x + distance * cos(radian);
+	float z = playerPos.z + distance * sin(radian);
+
+	// 4. 맵 밖으로 나가지 않게 보정 (맵 크기 MAP_SIZE 고려)
+	// 맵 좌표는 -500 ~ 500 (BLOCK_SIZE가 1.0일 때)
+	float limit = (MAP_SIZE / 2.0f) * BLOCK_SIZE - 5.0f; // 가장자리는 피함
+	if (x > limit) x = limit;
+	if (x < -limit) x = -limit;
+	if (z > limit) z = limit;
+	if (z < -limit) z = -limit;
+
+	// 5. 지형 높이 가져오기
+	float y = GetTerrainHeight(x, z);
+
+	return glm::vec3(x, y, z);
+}
+
+// [추가] 몬스터 스폰 관리자
+void ManageMonsterSpawning() {
+	// 게임 중이 아니거나 탱크가 없으면 패스
+	if (currentScene != STATE_PLAY || myTank == nullptr || gAssembleTime) return;
+
+	// 현재 몬스터 수가 최대치보다 적을 때만 생성 시도
+	if (myMonsters.size() < MAX_MONSTERS) {
+
+		// 매 프레임 무조건 생성하면 20마리가 1초만에 팍! 생김
+		// 약간의 랜덤성을 두어 "순차적"으로 생성되게 함 (예: 5% 확률)
+		if ((rand() % 100) < SPAWN_CHANCE) {
+			glm::vec3 spawnPos = GetRandomSpawnPos();
+			CreateMonster(spawnPos, false);
+			// std::cout << "Monster Spawned! Total: " << myMonsters.size() << std::endl;
+		}
+	}
+}
 void CreateMonster(glm::vec3 initLoc, bool isThrown) {
 	if (myTank == nullptr) {
 		std::cerr << "ERROR: myTank is nullptr!" << std::endl;
@@ -589,6 +641,38 @@ void Init() {
 
 	//for (int i = 0; i < 256; i++) keyState[i] = false;
 }
+
+void ResetGame() {
+	// 1. 기존 메모리 해제
+	if (myTank) {
+		delete myTank;
+		myTank = nullptr;
+	}
+	// 카메라는 Tank 생성자에서 new로 할당되므로, 기존 것은 지워줘야 메모리 누수 방지
+	if (myMainCamera) {
+		delete myMainCamera;
+		myMainCamera = nullptr;
+	}
+
+	// 몬스터 비우기
+	for (auto& m : myMonsters) {
+		if (m) delete m;
+	}
+	myMonsters.clear();
+
+	// 총알 비우기
+	for (auto& b : myBullets) {
+		if (b) delete b;
+	}
+	myBullets.clear();
+
+	// 2. 객체 재생성 (Init 함수나 main의 로직과 동일하게)
+	CreateTank();
+	CreateMonster(GetRandomSpawnPos(), false);
+
+	std::cout << "Game Reset Complete!" << std::endl;
+}
+
 
 bool CheckCollision(float targetX, float targetZ, float footY, float size_w, float size_d) {
 	// 충돌 박스 크기 (플레이어 크기의 절반보다 살짝 작게 설정하여 끼임 방지)

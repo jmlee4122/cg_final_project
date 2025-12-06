@@ -76,3 +76,6 @@ int gAssembleCount = 0;
 
 float gStageStart = 0.0f;
 float gStageDuration = 10.0f;
+
+GLuint failTexture = 0;
+GLuint titleTexture = 0;

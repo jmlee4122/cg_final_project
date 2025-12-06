@@ -21,22 +21,52 @@
 #include "Boss.h"
 #include "Stage.h"
 #include "Ice.h"
+#include "UserInterface.h"
+
+int currentScene = STATE_TITLE;
+float gameStartTime = 0.0f;
+
 
 GLvoid DrawScene() {
-	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
-	if (currentFrame > 180.0f && !gAssembleTime && !gAssembleActive) {
+	// 1. 타이틀 화면일 때
+	if (currentScene == STATE_TITLE) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// 타이틀 그리기
+		DrawTitleScreen(titleTexture, SCR_WIDTH, SCR_HEIGHT);
+
+		glutSwapBuffers();
+		return; // 게임 로직 실행 안 함
+	}
+	if (currentScene == STATE_FAILURE) {
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawFailScreen(failTexture, SCR_WIDTH, SCR_HEIGHT); // 실패 화면 그리기
+
+		glutSwapBuffers();
+		return;
+	}
+
+	float currentTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+	float inGameTime = currentTime - gameStartTime;
+	gDeltaTime = currentTime - lastFrame;
+	lastFrame = currentTime;
+
+	if (inGameTime > boss_time && !gAssembleTime && !gAssembleActive) {
 		gAssembleTime = true;
 		gAssembleActive = true;
 		for (auto r : myMonsters) {
 			r->SpeedUp();
 		}
 	}
-	gDeltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
+
 
 	// 1. 시간 흐름 계산 (3분 = 180초)
-	float maxTime = 180.0f;
-	float ratio = currentFrame / maxTime;
+	float maxTime = boss_time;
+	float ratio = inGameTime / maxTime;
 
 	if (ratio > 1.0f) ratio = 1.0f;
 
@@ -141,6 +171,18 @@ GLvoid DrawScene() {
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthFunc(GL_LESS);
 
+	if (myTank && myTank->GetHP() <= 0.0f) {
+		currentScene = STATE_FAILURE;
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+	}
+
+	// 3. 인게임 UI 그리기
+	if (myTank) {
+		// Tank 클래스에 Getter가 없으면 Tank.h에 float GetHp() { return hp; } 추가 필요
+		// 여기서는 임시로 hp에 접근한다고 가정하거나 getter 사용
+		DrawInGameUI(inGameTime, myTank->GetHP(), 100.0f, SCR_WIDTH, SCR_HEIGHT);
+	}
+
 	glutSwapBuffers();
 }
 
@@ -150,6 +192,26 @@ GLvoid Reshape(int w, int h) {
 }
 
 GLvoid Keyboard(unsigned char key, int x, int y) {
+	// 타이틀 화면에서 스페이스바 처리
+	if (currentScene == STATE_TITLE) {
+		if (key == ' ') {
+			currentScene = STATE_PLAY;
+			gameStartTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+			ResetGame();
+
+			glutSetCursor(GLUT_CURSOR_NONE);
+		}
+		return;
+	}
+	//실패 화면에서 스페이스바 -> 타이틀로 이동
+	if (currentScene == STATE_FAILURE) {
+		if (key == ' ') {
+			currentScene = STATE_TITLE; // 타이틀로 돌아감
+		}
+		return;
+	}
+
 	switch (key) {
 	case 'w':
 		if (myTank) myTank->SetIsFront(true);
@@ -211,6 +273,7 @@ GLvoid Timer(int value) {
 				r->Update();
 			}
 		}
+		ManageMonsterSpawning();
 		if (myBoss) myBoss->Update();
 		if (myStage) {
 			float currTime = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
