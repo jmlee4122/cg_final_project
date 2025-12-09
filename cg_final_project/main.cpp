@@ -31,10 +31,16 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	shaderProgramID = make_shaderProgram(); //--- 세이더 프로그램 만들기
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Init();
 	CreateTank();
 
+
+
+
+	glutSetCursor(GLUT_CURSOR_NONE); // 커서를 보이지 않게 함
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
@@ -42,7 +48,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 	glutMouseFunc(Mouse);
-	glutPassiveMotionFunc(MouseMotion);  // 버튼 누르지 않아도 동작
+	glutPassiveMotionFunc(MouseMotion);
 	glutTimerFunc(0, Timer, 0);
 	glutMainLoop();
 
