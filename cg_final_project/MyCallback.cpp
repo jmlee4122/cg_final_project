@@ -371,11 +371,8 @@ GLvoid Mouse(int button, int state, int x, int y) {
 	}
 	glutPostRedisplay();
 }
+
 GLvoid MouseMotion(int x, int y) {
-
-}
-
-GLvoid PassiveMotion(int x, int y) {
 	// È­¸é Áß¾Ó ÁÂÇ¥ °è»ê
 	int centerX = SCR_WIDTH / 2;
 	int centerY = SCR_HEIGHT / 2;

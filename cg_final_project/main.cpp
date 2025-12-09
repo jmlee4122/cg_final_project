@@ -57,7 +57,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 	glutMouseFunc(Mouse);
-	glutPassiveMotionFunc(PassiveMotion);
+	glutPassiveMotionFunc(MouseMotion);
 	glutTimerFunc(0, Timer, 0);
 	glutMainLoop();
 
