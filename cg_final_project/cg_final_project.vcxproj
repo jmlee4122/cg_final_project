@@ -30,10 +30,8 @@
     <ClCompile Include="TankPart.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CameraMain.h" />
     <ClInclude Include="CameraSub.h" />
-    <ClInclude Include="Monster.h" />
     <ClInclude Include="MyCallback.h" />
     <ClInclude Include="MyExtern.h" />
     <ClInclude Include="MyStruct.h" />
