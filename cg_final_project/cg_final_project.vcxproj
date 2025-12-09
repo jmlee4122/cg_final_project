@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CameraMain.cpp" />
     <ClCompile Include="CameraSub.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MyCallback.cpp" />
     <ClCompile Include="MyExtern.cpp" />
     <ClCompile Include="MyUtils.cpp" />
@@ -30,8 +32,10 @@
     <ClCompile Include="TankPart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CameraMain.h" />
     <ClInclude Include="CameraSub.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="MyCallback.h" />
     <ClInclude Include="MyExtern.h" />
     <ClInclude Include="MyStruct.h" />
