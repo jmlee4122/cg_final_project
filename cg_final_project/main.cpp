@@ -33,7 +33,6 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glEnable(GL_DEPTH_TEST);
 
 	Init();
-	//CreatePlane();
 	CreateTank();
 
 	glutDisplayFunc(DrawScene); //--- 출력 콜백 함수
