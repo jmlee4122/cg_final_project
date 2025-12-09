@@ -36,6 +36,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 
 	Init();
 	CreateTank();
+
 	//test
 	for (int i = 0; i < 10; i++) {
 		CreateMonster(glm::vec3(30, 0, 70), false);
