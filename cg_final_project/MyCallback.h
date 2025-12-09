@@ -12,3 +12,4 @@ GLvoid SpecialKeyUp(int key, int x, int y);
 GLvoid Mouse(int button, int state, int x, int y);
 GLvoid MouseMotion(int x, int y);
 GLvoid Timer(int value);
+GLvoid MouseMotion(int x, int y);

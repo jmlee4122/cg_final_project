@@ -2,32 +2,35 @@
 #include "MyStruct.h"
 #include <vector>
 
+bool gIsRunning = true;
+
 GLuint vertexShader;
 GLuint fragmentShader;
 GLuint shaderProgramID;
-int window_w = 1400;
-int window_h = 800;
+
 int minimap_size = 300;
 
 glm::mat4 gViewMat = glm::mat4(1.0);
 glm::mat4 gProjMat = glm::mat4(1.0);
 
-float gTankSize_width = 10.0f;
-float gTankSize_height = 7.0f;
-float gTankSize_depth = 20.0f;
+float gTankSize_width = 10.0f / 10.0f;
+float gTankSize_height = 7.0f / 10.0f;
+float gTankSize_depth = 20.0f / 10.0f;
 
 //float gravity = 9.8f;
 
-Plane* myPlane = nullptr;
 Tank* myTank = nullptr;
+std::vector<Monster*> myMonsters;
+std::vector<Bullet*> myBullets;
+Boss* myBoss = nullptr;
+Stage* myStage = nullptr;
+std::vector<Ice*> myIces;
 CameraMain* myMainCamera = nullptr;
-CameraSub* mySubCamera = nullptr;
-
 
 
 // --- 전역 변수 ---
-const unsigned int SCR_WIDTH = 1920;
-const unsigned int SCR_HEIGHT = 1080;
+unsigned int SCR_WIDTH = 1920;
+unsigned int SCR_HEIGHT = 1080;
 
 const int MAP_SIZE = 1000;
 const float BLOCK_SIZE = 1.0f;
@@ -40,11 +43,11 @@ float objectSpeed = 20.0f;
 float playerSize = 0.8f;
 
 // 물리
-float verticalVelocity = 0.0f;
-float gravity = 30.0f;
-float jumpForce = 10.0f;
-bool isGrounded = false;
-bool keyState[256];
+//float verticalVelocity = 0.0f;
+//float gravity = 30.0f;
+//float jumpForce = 10.0f;
+//bool isGrounded = false;
+//bool keyState[256];
 
 // 카메라
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -55,7 +58,7 @@ float pitch = 35.0f;
 float lastX = SCR_WIDTH / 2.0;
 float lastY = SCR_HEIGHT / 2.0;
 bool firstMouse = true;
-float deltaTime = 0.0f;
+float gDeltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // OpenGL 자원
@@ -66,3 +69,20 @@ GLuint cubeVAO, cubeVBO, skyboxVAO, skyboxVBO;
 // 조명
 glm::vec3 lightPos = glm::vec3(500.0f, 500.0f, 500.0f);
 glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+
+bool gAssembleTime = false;
+bool gAssembleActive = false;
+int gAssembleCount = 0;
+
+float gStageStart = 0.0f;
+float gStageDuration = 10.0f;
+
+GLuint failTexture = 0;
+GLuint titleTexture = 0;
+GLuint clearTexture = 0;
+
+const int MAX_MONSTERS = 50;        // 최대 몬스터 수
+const float SPAWN_RADIUS_MIN = 60.0f; // 최소 거리
+const float SPAWN_RADIUS_MAX = 120.0f; // 최대 거리 (시야 밖 생성)
+const int SPAWN_CHANCE = 4;  // 프레임당 생성 확률
+const float boss_time = 60.0f; // 보스 등장 시간 (초)

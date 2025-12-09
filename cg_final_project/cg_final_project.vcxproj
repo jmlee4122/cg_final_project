@@ -19,26 +19,34 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Boss.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CameraMain.cpp" />
-    <ClCompile Include="CameraSub.cpp" />
+    <ClCompile Include="Ice.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MyCallback.cpp" />
     <ClCompile Include="MyExtern.cpp" />
     <ClCompile Include="MyUtils.cpp" />
-    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TankPart.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boss.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CameraMain.h" />
-    <ClInclude Include="CameraSub.h" />
+    <ClInclude Include="Ice.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="MyCallback.h" />
     <ClInclude Include="MyExtern.h" />
     <ClInclude Include="MyStruct.h" />
     <ClInclude Include="MyUtils.h" />
-    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Stage.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="TankPart.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -143,6 +151,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>glew32.lib freeglut.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

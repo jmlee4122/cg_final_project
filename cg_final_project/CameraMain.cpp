@@ -10,12 +10,16 @@
 #include "MyExtern.h"
 #include "MyStruct.h"
 #include "CameraMain.h"
+#include "Tank.h"
 
 CameraMain::CameraMain(glm::vec3 &c, glm::vec3 &v) { // c : center, v : view point
 	this->camera_d = gTankSize_depth * 10.0f;
 	this->camera_h = gTankSize_height * 25.0f;
-	this->eye = c - (camera_d * v) + (camera_h * glm::vec3(0, 1, 0));
+
 	this->at = c;
+	this->eye.x = this->at.x + camera_d * cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	this->eye.y = this->at.y + camera_h * sin(glm::radians(pitch));
+	this->eye.z = this->at.z + camera_d * cos(glm::radians(pitch)) * cos(glm::radians(yaw));
 	this->up = glm::vec3(0, 1, 0);
 	this->modelMat = glm::mat4(1.0);
 }
@@ -33,15 +37,17 @@ void CameraMain::ChangeViewMat() const {
 }
 
 void CameraMain::UpdateVectors() {
-	// update eye vector
-	glm::vec4 vector = glm::vec4(this->eye, 1); // order : 3 -> 4
-	vector = this->modelMat * vector;
-	this->eye = glm::vec3(vector); // order : 4 -> 3
-
 	// update at vector
-	vector = glm::vec4(this->at, 1); // order : 3 -> 4
-	vector = this->modelMat * vector;
-	this->at = glm::vec3(vector); // order : 4 -> 3
+	//glm::vec4 vector = glm::vec4(this->at, 1); // order : 3 -> 4
+	//vector = this->modelMat * vector;
+	//this->at = glm::vec3(vector); // order : 4 -> 3
+	glm::vec3 c = myTank->GetCenter();
+	this->at = glm::vec3(c.x, c.y, c.z);
+
+	// update eye vector
+	this->eye.x = this->at.x + camera_d * cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	this->eye.y = this->at.y + camera_h * sin(glm::radians(pitch));
+	this->eye.z = this->at.z + camera_d * cos(glm::radians(pitch)) * cos(glm::radians(yaw));
 }
 
 glm::vec3 CameraMain::GetEye() const {

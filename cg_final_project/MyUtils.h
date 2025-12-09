@@ -7,6 +7,10 @@ struct Model;
 struct Vertex;
 struct Face;
 
+class Monster;
+class Ice;
+class Bullet;
+
 void read_newline(char* str);
 void read_obj_file(const char* filename, Model* model);
 void print_model_info(const Model* model);
@@ -19,12 +23,11 @@ void make_fragmentShaders();
 GLuint make_shaderProgram();
 
 void SetProjMatMain(); // set projection matrix for main screen
-void SetProjMatSub(); // set projection matrix for mini map
 
-void CreatePlane();
 void CreateTank();
-
-
+void CreateMonster(glm::vec3 initLoc, bool isThrown);
+void CreateBoss();
+void CreateStage(glm::vec3 initLoc);
 
 
 
@@ -38,3 +41,25 @@ void InitMap();
 bool IsValidIndex(int x, int z);
 float GetTerrainHeight(float x, float z);
 void Init();
+bool CheckCollision(float targetX, float targetZ, float footY, float size_w, float size_d);
+
+template<typename T>
+void RemoveDestroyed(std::vector<T*>& myVec) {
+    for (auto it = myVec.begin(); it != myVec.end();) {
+        if ((*it)->GetDestroyed()) {
+            delete* it;
+            it = myVec.erase(it);
+        }
+        else {
+            it++;
+        }
+    }
+}
+
+bool AllAssembled();
+
+void ResetGame();
+
+// 몬스터 스폰 관리 함수
+void ManageMonsterSpawning();
+glm::vec3 GetRandomSpawnPos();
